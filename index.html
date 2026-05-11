@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <title>Gitter-generator Pro</title>
+    <link rel="icon" type="image/png" href="gitter_01.png">
+    <link rel="apple-touch-icon" href="gitter_01.png">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --vokal-farge: #ffcccc; 
+            --vokal-tekst: #e74c3c;
+            --konsonant-tekst: #2c3e50;
+            --konsonant-overskrift: #2980b9;
+            --alt-match: #27ae60;
+            --sidebar-bg: #243447; 
+            --item-bg: #2c3e50;    
+            --accent-green: #2ecc71;
+            --sidebar-text: #ffffff;
+            --main-bg: #f0f2f5;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            display: flex; 
+            height: 100vh; 
+            background-color: var(--main-bg); 
+            color: #333;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 320px;
+            background-color: var(--sidebar-bg);
+            color: var(--sidebar-text);
+            padding: 20px 15px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 4px 0 15px rgba(0,0,0,0.3);
+            z-index: 10;
+        }
+
+        .sidebar h2 { 
+            margin: 0 0 15px 0; 
+            font-size: 1.1rem; 
+            text-align: center; 
+            letter-spacing: 1px; 
+            text-transform: uppercase;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 10px;
+        }
+
+        textarea { 
+            width: 100%; 
+            height: 120px; 
+            padding: 10px; 
+            border-radius: 6px; 
+            border: none; 
+            font-family: inherit; 
+            font-size: 0.9rem;
+            box-sizing: border-box;
+            margin-bottom: 15px;
+            background-color: #ecf0f1;
+        }
+
+        /* MINDRE KONTROLL-KORT */
+        .control-item {
+            background-color: var(--item-bg);
+            padding: 8px 12px; /* Redusert padding */
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px; /* Mindre mellomrom mellom kortene */
+        }
+
+        .control-item span { font-size: 0.85rem; font-weight: 500; }
+
+        /* MINDRE BRYTERE */
+        .switch { position: relative; display: inline-block; width: 36px; height: 20px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #555; transition: .3s; border-radius: 20px;
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 14px; width: 14px;
+            left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%;
+        }
+        input:checked + .slider { background-color: var(--accent-green); }
+        input:checked + .slider:before { transform: translateX(16px); }
+
+        /* KNAPPER OG AVSTAND */
+        .sidebar-controls { margin-bottom: 15px; } /* Redusert avstand ned til knappene */
+
+        .btn-group { display: flex; flex-direction: column; gap: 8px; }
+        .action-btn {
+            width: 100%;
+            padding: 12px;
+            border-radius: 6px;
+            border: none;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: 0.2s;
+        }
+        .btn-generate { background-color: var(--accent-green); color: white; }
+        .btn-download { background-color: #2980b9; color: white; }
+        .btn-reset { background-color: #555; color: white; margin-top: 2px; font-size: 0.75rem; padding: 8px; }
+        .action-btn:hover { filter: brightness(1.1); }
+
+        /* HOVEDOMRÅDE */
+        .main-content {
+            flex-grow: 1;
+            overflow-y: auto;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 40px;
+        }
+
+        #capture-area {
+            background: white;
+            padding: 40px;
+            border-radius: 5px;
+            display: inline-flex;
+            gap: 50px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+
+
+.sidebar-logo {
+    width: 100%;
+    display: flex;
+    justify-content: center; /* Sørger for at beholderen sentrerer innholdet */
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.sidebar-logo img {
+    max-width: 150px; /* Her kan du justere tallet (f.eks. 150px) for å få den mindre/større */
+    height: auto;
+    display: block;
+    margin: 0 auto; /* Sentrerer selve bildet */
+    border-radius: 4px;
+}
+        /* TABELL-STIL */
+        .table-container { display: flex; align-items: flex-start; }
+        .row-numbers { display: flex; flex-direction: column; padding-top: 55px; }
+        .num-item { height: 42px; display: flex; align-items: center; justify-content: flex-end; width: 30px; padding-right: 10px; font-style: italic; font-size: 0.9rem; color: #7f8c8d; }
+
+        table { border-collapse: collapse; }
+        td { 
+            border: 1px solid #000; 
+            width: 42px; height: 42px; 
+            text-align: center; 
+            font-size: 1.15rem; font-weight: bold; 
+            text-transform: uppercase; 
+            position: relative;
+        }
+        
+        .header-row td { border: 2px solid #000; height: 48px; }
+        .v-text { color: var(--vokal-tekst); }
+        .k-text { color: var(--konsonant-tekst); }
+        .header-row .k-text { color: var(--konsonant-overskrift); }
+
+        .show-vowel-bg .is-vowel-cell, 
+        .show-vowel-bg .header-row .is-vowel-cell { background-color: var(--vokal-farge); }
+
+        .inactive { background-color: #d1d1d1; }
+        .hide-ends-active .inactive { background-color: white; }
+        
+        .cell-content { display: none; }
+        .show-fasit .cell-content { display: block; }
+
+        .alt-indicator { display: none; position: absolute; top: 1px; right: 1px; color: var(--alt-match); font-size: 0.5rem; }
+        .show-fasit .alt-indicator { display: block; }
+        .show-fasit .is-alt-start { outline: 2px dashed var(--alt-match); outline-offset: -4px; }
+
+        .word-list-box { border: 2px solid #333; padding: 25px; min-width: 200px; background: white; }
+        .word-list-box h3 { margin: 0 0 15px 0; text-align: center; border-bottom: 2px solid #333; padding-bottom: 8px; }
+        .word-list-box ul { list-style: none; padding: 0; margin: 0; }
+        .word-list-box li { padding: 6px 0; border-bottom: 1px solid #eee; }
+
+@media print {
+    /* Skjul sidebaren fullstendig */
+    .sidebar { 
+        display: none !important; 
+    }
+    
+    /* Tving hvit bakgrunn på hele dokumentet */
+    body, .main-content { 
+        background-color: white !important; 
+        padding: 0 !important; 
+        margin: 0 !important;
+        display: block !important;
+    }
+
+    /* Bevar oppsettet (gitter ved siden av liste) uten skygger */
+    #capture-area { 
+        box-shadow: none !important; 
+        background-color: white !important;
+        border: none !important;
+        padding: 20px !important;
+        
+        /* Her sikrer vi at de står ved siden av hverandre */
+        display: flex !important; 
+        flex-direction: row !important;
+        justify-content: flex-start !important;
+        gap: 50px !important;
+    }
+
+    /* Sikrer at fargene på K og V ikke blir borte */
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+}
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <div class="sidebar-logo">
+    <img src="gitter_02.png" alt="Gitter Logo">
+</div>
+    
+    <textarea id="wordInput" placeholder="Ord (ett per linje)..."></textarea>
+
+    <div class="sidebar-controls">
+        <div class="control-item">
+            <span>Marker tomme felt</span>
+            <label class="switch">
+                <input type="checkbox" id="toggleEnds" onchange="updateView()">
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div class="control-item">
+            <span>Vokal-farge</span>
+            <label class="switch">
+                <input type="checkbox" id="toggleVowels" onchange="updateView()">
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div class="control-item">
+            <span style="color: #ff7675;">Vis fasit</span>
+            <label class="switch">
+                <input type="checkbox" id="toggleFasit" onchange="updateView()">
+                <span class="slider"></span>
+            </label>
+        </div>
+    </div>
+
+    <div class="btn-group">
+        <button class="action-btn btn-generate" onclick="generate()">Generer gitter</button>
+        <button class="action-btn" style="background-color: #9b59b6; color: white;" onclick="window.print()">Skriv ut</button>
+        <button class="action-btn btn-download" onclick="downloadFullImage()">Last ned bilde</button>
+        <button class="action-btn btn-reset" onclick="resetForm()">Nullstill</button>
+    </div>
+</div>
+
+<div class="main-content">
+    <div id="capture-area">
+        <div class="table-container">
+            <div id="numberColumn" class="row-numbers"></div>
+            <div id="gridOutput"></div>
+        </div>
+        <div id="wordListOutput"></div>
+    </div>
+</div>
+
+<script>
+    const vokaler = "aeiouyæøå";
+
+    function updateView() {
+        const output = document.getElementById('gridOutput');
+        const body = document.body;
+        if (!document.getElementById('toggleEnds').checked) body.classList.add('hide-ends-active');
+        else body.classList.remove('hide-ends-active');
+        if (document.getElementById('toggleVowels').checked) output.classList.add('show-vowel-bg');
+        else output.classList.remove('show-vowel-bg');
+        if (document.getElementById('toggleFasit').checked) output.classList.add('show-fasit');
+        else output.classList.remove('show-fasit');
+    }
+
+    function resetForm() {
+        if(!confirm("Nullstille alt?")) return;
+        document.getElementById('wordInput').value = "";
+        document.getElementById('gridOutput').innerHTML = "";
+        document.getElementById('numberColumn').innerHTML = "";
+        document.getElementById('wordListOutput').innerHTML = "";
+        document.querySelectorAll('input[type=checkbox]').forEach(el => el.checked = false);
+        updateView();
+    }
+
+    function getPattern(word) {
+        return word.toLowerCase().split('').map(c => vokaler.includes(c) ? 'V' : 'K');
+    }
+
+    function buildMaster(wordData) {
+        let master = [...wordData[0].pattern];
+        let placements = [{ start: 0, length: wordData[0].pattern.length }];
+
+        for (let i = 1; i < wordData.length; i++) {
+            let p = wordData[i].pattern;
+            let minNewLength = Infinity;
+            let finalShift = 0;
+
+            for (let s = -p.length; s <= master.length; s++) {
+                let possibleMatch = true;
+                for (let j = 0; j < p.length; j++) {
+                    let mIdx = s + j;
+                    if (mIdx >= 0 && mIdx < master.length) {
+                        if (master[mIdx] !== p[j]) { possibleMatch = false; break; }
+                    }
+                }
+                if (possibleMatch) {
+                    let currentStart = Math.min(0, s);
+                    let currentEnd = Math.max(master.length, s + p.length);
+                    let totalLen = currentEnd - currentStart;
+                    if (totalLen < minNewLength) {
+                        minNewLength = totalLen;
+                        finalShift = s;
+                    }
+                }
+            }
+
+            let newMaster = [];
+            let offset = finalShift < 0 ? Math.abs(finalShift) : 0;
+            if (finalShift < 0) {
+                placements.forEach(pl => pl.start += offset);
+                for(let k=0; k<offset; k++) newMaster.push(p[k]);
+                master.forEach(m => newMaster.push(m));
+                finalShift = 0;
+            } else {
+                newMaster = [...master];
+            }
+            for (let j = 0; j < p.length; j++) {
+                newMaster[finalShift + j] = p[j];
+            }
+            master = newMaster;
+            placements.push({ start: finalShift, length: p.length });
+        }
+        return { master, placements };
+    }
+
+    function generate() {
+        const input = document.getElementById('wordInput').value.trim();
+        const rawWords = input.split('\n').map(w => w.trim()).filter(w => w !== "");
+        if (rawWords.length === 0) return;
+
+        let wordData = rawWords.map(w => ({ word: w, pattern: getPattern(w) }));
+        wordData.sort((a, b) => b.word.length - a.word.length);
+
+        const result = buildMaster(wordData);
+        const masterPattern = result.master;
+        const maxLength = masterPattern.length;
+
+        const numCol = document.getElementById('numberColumn');
+        numCol.innerHTML = wordData.map((_, i) => `<div class="num-item">${i + 1}.</div>`).join('');
+
+        let table = document.createElement('table');
+        let headerRow = document.createElement('tr');
+        headerRow.className = "header-row";
+        
+        masterPattern.forEach(char => {
+            let td = document.createElement('td');
+            if (char === 'V') td.classList.add('is-vowel-cell');
+            td.innerHTML = `<span class="${char === 'V' ? 'v-text' : 'k-text'}">${char}</span>`;
+            headerRow.appendChild(td);
+        });
+        table.appendChild(headerRow);
+
+        wordData.forEach((data, idx) => {
+            let row = document.createElement('tr');
+            let letters = data.word.split('');
+            let pos = result.placements[idx];
+
+            let altStarts = [];
+            for (let s = 0; s <= maxLength - data.pattern.length; s++) {
+                let match = true;
+                for (let j = 0; j < data.pattern.length; j++) {
+                    if (masterPattern[s+j] !== data.pattern[j]) { match = false; break; }
+                }
+                if (match && s !== pos.start) altStarts.push(s);
+            }
+
+            for (let i = 0; i < maxLength; i++) {
+                let td = document.createElement('td');
+                if (masterPattern[i] === 'V') td.classList.add('is-vowel-cell');
+                if (i >= pos.start && i < pos.start + pos.length) {
+                    td.innerHTML = `<span class="cell-content">${letters[i - pos.start]}</span>`;
+                } else {
+                    td.classList.add('inactive');
+                }
+                if (altStarts.includes(i)) {
+                    td.classList.add('is-alt-start');
+                    td.innerHTML += `<span class="alt-indicator">ALT</span>`;
+                }
+                row.appendChild(td);
+            }
+            table.appendChild(row);
+        });
+
+        document.getElementById('gridOutput').innerHTML = "";
+        document.getElementById('gridOutput').appendChild(table);
+        const sorted = [...rawWords].sort((a,b) => a.localeCompare(b, 'nb'));
+        document.getElementById('wordListOutput').innerHTML = `<div class="word-list-box"><h3>Ordliste</h3><ul>${sorted.map(w => `<li>${w}</li>`).join('')}</ul></div>`;
+        updateView();
+    }
+
+    function downloadFullImage() {
+        const element = document.getElementById('capture-area');
+        if (!element || document.getElementById('gridOutput').innerHTML === "") {
+            alert("Generer et gitter først!");
+            return;
+        }
+
+        html2canvas(element, {
+            backgroundColor: "#ffffff",
+            scale: 2,
+            onclone: (clonedDoc) => {
+                const area = clonedDoc.getElementById('capture-area');
+                area.style.display = "inline-flex";
+                area.style.padding = "40px";
+                area.style.boxShadow = "none";
+            }
+        }).then(canvas => {
+            const link = document.createElement('a');
+            link.download = 'gitter_oppgave.png';
+            link.href = canvas.toDataURL("image/png");
+            link.click();
+        });
+    }
+
+    updateView();
+</script>
+
+</body>
+</html>
