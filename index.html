@@ -6,228 +6,173 @@
     <link rel="icon" type="image/png" href="gitter_01.png">
     <link rel="apple-touch-icon" href="gitter_01.png">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <style>
-        :root {
-            --vokal-farge: #ffcccc; 
-            --vokal-tekst: #e74c3c;
-            --konsonant-tekst: #2c3e50;
-            --konsonant-overskrift: #2980b9;
-            --alt-match: #27ae60;
-            --sidebar-bg: #243447; 
-            --item-bg: #2c3e50;    
-            --accent-green: #2ecc71;
-            --sidebar-text: #ffffff;
-            --main-bg: #f0f2f5;
-        }
+<style>
+    @font-face {
+        font-family: 'Trykkskrift';
+        src: url('trykkskrift.otf') format('opentype');
+        font-weight: normal;
+        font-style: normal;
+    }
 
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            margin: 0; 
-            display: flex; 
-            height: 100vh; 
-            background-color: var(--main-bg); 
-            color: #333;
-        }
+    :root {
+        --vokal-farge: #ffcccc; 
+        --vokal-tekst: #e74c3c;
+        --konsonant-tekst: #2c3e50;
+        --konsonant-overskrift: #2980b9;
+        --alt-match: #27ae60;
+        --sidebar-bg: #243447; 
+        --item-bg: #2c3e50;    
+        --accent-green: #2ecc71;
+        --sidebar-text: #ffffff;
+        --main-bg: #f0f2f5;
+    }
 
-        /* SIDEBAR */
-        .sidebar {
-            width: 320px;
-            background-color: var(--sidebar-bg);
-            color: var(--sidebar-text);
-            padding: 20px 15px;
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 4px 0 15px rgba(0,0,0,0.3);
-            z-index: 10;
-        }
+    body { 
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+        margin: 0; 
+        display: flex; 
+        height: 100vh; 
+        background-color: var(--main-bg); 
+        color: #333;
+    }
 
-        .sidebar h2 { 
-            margin: 0 0 15px 0; 
-            font-size: 1.1rem; 
-            text-align: center; 
-            letter-spacing: 1px; 
-            text-transform: uppercase;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            padding-bottom: 10px;
-        }
+    /* SIDEBAR OG LOGO */
+    .sidebar {
+        width: 350px;
+        background-color: var(--sidebar-bg);
+        color: var(--sidebar-text);
+        padding: 20px 15px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 4px 0 15px rgba(0,0,0,0.3);
+        z-index: 10;
+    }
 
-        textarea { 
-            width: 100%; 
-            height: 120px; 
-            padding: 10px; 
-            border-radius: 6px; 
-            border: none; 
-            font-family: inherit; 
-            font-size: 0.9rem;
-            box-sizing: border-box;
-            margin-bottom: 15px;
-            background-color: #ecf0f1;
-        }
+    .sidebar-logo {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
 
-        /* MINDRE KONTROLL-KORT */
-        .control-item {
-            background-color: var(--item-bg);
-            padding: 8px 12px; /* Redusert padding */
-            border-radius: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 6px; /* Mindre mellomrom mellom kortene */
-        }
+    .sidebar-logo img {
+        max-width: 150px;
+        height: auto;
+        display: block;
+        margin: 0 auto;
+        border-radius: 4px;
+    }
 
-        .control-item span { font-size: 0.85rem; font-weight: 500; }
+    .sidebar h2 { margin: 0 0 15px 0; font-size: 1.1rem; text-align: center; text-transform: uppercase; }
 
-        /* MINDRE BRYTERE */
-        .switch { position: relative; display: inline-block; width: 36px; height: 20px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider {
-            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #555; transition: .3s; border-radius: 20px;
-        }
-        .slider:before {
-            position: absolute; content: ""; height: 14px; width: 14px;
-            left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%;
-        }
-        input:checked + .slider { background-color: var(--accent-green); }
-        input:checked + .slider:before { transform: translateX(16px); }
+    textarea { 
+        width: 100%; height: 120px; padding: 10px; border-radius: 6px; border: none; 
+        font-family: inherit; font-size: 0.9rem; box-sizing: border-box; margin-bottom: 15px; background-color: #ecf0f1;
+    }
 
-        /* KNAPPER OG AVSTAND */
-        .sidebar-controls { margin-bottom: 15px; } /* Redusert avstand ned til knappene */
-
-        .btn-group { display: flex; flex-direction: column; gap: 8px; }
-        .action-btn {
-            width: 100%;
-            padding: 12px;
-            border-radius: 6px;
-            border: none;
-            font-weight: bold;
-            text-transform: uppercase;
-            cursor: pointer;
-            font-size: 0.85rem;
-            transition: 0.2s;
-        }
-        .btn-generate { background-color: var(--accent-green); color: white; }
-        .btn-download { background-color: #2980b9; color: white; }
-        .btn-reset { background-color: #555; color: white; margin-top: 2px; font-size: 0.75rem; padding: 8px; }
-        .action-btn:hover { filter: brightness(1.1); }
-
-        /* HOVEDOMRÅDE */
-        .main-content {
-            flex-grow: 1;
-            overflow-y: auto;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            padding: 40px;
-        }
-
-        #capture-area {
-            background: white;
-            padding: 40px;
-            border-radius: 5px;
-            display: inline-flex;
-            gap: 50px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-        }
-
-
-.sidebar-logo {
-    width: 100%;
-    display: flex;
-    justify-content: center; /* Sørger for at beholderen sentrerer innholdet */
-    margin-bottom: 20px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
+/* Legg denne til i CSS-en din */
+.action-btn:hover {
+    filter: brightness(1.1); /* Lyser opp litt når du holder over */
+    transform: translateY(-1px); /* Løfter seg et hakk */
 }
 
-.sidebar-logo img {
-    max-width: 150px; /* Her kan du justere tallet (f.eks. 150px) for å få den mindre/større */
-    height: auto;
-    display: block;
-    margin: 0 auto; /* Sentrerer selve bildet */
-    border-radius: 4px;
+    /* KONTROLLER */
+    .control-item {
+        display: flex; align-items: center; justify-content: space-between;
+        background: rgba(0,0,0,0.2); padding: 10px 12px; border-radius: 8px; margin-bottom: 8px; font-size: 0.9rem;
+    }
+
+    .switch { position: relative; display: inline-block; width: 40px; height: 20px; flex-shrink: 0; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 20px; }
+    .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+    input:checked + .slider { background-color: #27ae60; }
+    input:checked + .slider:before { transform: translateX(20px); }
+
+    .action-btn { width: 100%; padding: 12px; border-radius: 6px; border: none; font-weight: bold; text-transform: uppercase; cursor: pointer; font-size: 0.85rem; transition: 0.2s; margin-bottom: 8px; }
+    .btn-generate { background-color: var(--accent-green); color: white; }
+    .btn-row { display: flex; gap: 8px; }
+
+    /* HOVEDOMRÅDE OG TABELL */
+    .main-content { flex-grow: 1; overflow-y: auto; display: flex; justify-content: center; align-items: flex-start; padding: 40px; }
+    #capture-area { background: white; padding: 40px; border-radius: 5px; display: inline-flex; gap: 50px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+    .table-container { display: flex; align-items: flex-start; }
+    .row-numbers { display: flex; flex-direction: column; padding-top: 55px; }
+    .num-item { height: 42px; display: flex; align-items: center; justify-content: flex-end; width: 30px; padding-right: 10px; font-style: italic; font-size: 0.9rem; color: #7f8c8d; }
+
+    table { border-collapse: collapse; }
+    td, .word-list-box { font-family: 'Trykkskrift', sans-serif; }
+
+    /* --- CELLER OG FARGER (DEN VIKTIGE DELEN) --- */
+
+/* 1. Grunnoppsett: Gjør alle celler gjennomsiktige som standard */
+/* 1. FJERN alle andre td-regler og bruk denne som base */
+td { 
+    border: 1px solid #000; 
+    width: 42px; 
+    height: 42px; 
+    text-align: center; 
+    font-size: 1.3rem; 
+    position: relative;
+    background-color: white; /* Alle starter som hvite */
 }
-        /* TABELL-STIL */
-        .table-container { display: flex; align-items: flex-start; }
-        .row-numbers { display: flex; flex-direction: column; padding-top: 55px; }
-        .num-item { height: 42px; display: flex; align-items: center; justify-content: flex-end; width: 30px; padding-right: 10px; font-style: italic; font-size: 0.9rem; color: #7f8c8d; }
 
-        table { border-collapse: collapse; }
-        td { 
-            border: 1px solid #000; 
-            width: 42px; height: 42px; 
-            text-align: center; 
-            font-size: 1.15rem; font-weight: bold; 
-            text-transform: uppercase; 
-            position: relative;
-        }
-        
-        .header-row td { border: 2px solid #000; height: 48px; }
-        .v-text { color: var(--vokal-tekst); }
-        .k-text { color: var(--konsonant-tekst); }
-        .header-row .k-text { color: var(--konsonant-overskrift); }
-
-        .show-vowel-bg .is-vowel-cell, 
-        .show-vowel-bg .header-row .is-vowel-cell { background-color: var(--vokal-farge); }
-
-        .inactive { background-color: #d1d1d1; }
-        .hide-ends-active .inactive { background-color: white; }
-        
-        .cell-content { display: none; }
-        .show-fasit .cell-content { display: block; }
-
-        .alt-indicator { display: none; position: absolute; top: 1px; right: 1px; color: var(--alt-match); font-size: 0.5rem; }
-        .show-fasit .alt-indicator { display: block; }
-        .show-fasit .is-alt-start { outline: 2px dashed var(--alt-match); outline-offset: -4px; }
-
-        .word-list-box { border: 2px solid #333; padding: 25px; min-width: 200px; background: white; }
-        .word-list-box h3 { margin: 0 0 15px 0; text-align: center; border-bottom: 2px solid #333; padding-bottom: 8px; }
-        .word-list-box ul { list-style: none; padding: 0; margin: 0; }
-        .word-list-box li { padding: 6px 0; border-bottom: 1px solid #eee; }
-
-@media print {
-    /* Skjul sidebaren fullstendig */
-    .sidebar { 
-        display: none !important; 
-    }
-    
-    /* Tving hvit bakgrunn på hele dokumentet */
-    body, .main-content { 
-        background-color: white !important; 
-        padding: 0 !important; 
-        margin: 0 !important;
-        display: block !important;
-    }
-
-    /* Bevar oppsettet (gitter ved siden av liste) uten skygger */
-    #capture-area { 
-        box-shadow: none !important; 
-        background-color: white !important;
-        border: none !important;
-        padding: 20px !important;
-        
-        /* Her sikrer vi at de står ved siden av hverandre */
-        display: flex !important; 
-        flex-direction: row !important;
-        justify-content: flex-start !important;
-        gap: 50px !important;
-    }
-
-    /* Sikrer at fargene på K og V ikke blir borte */
-    * {
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-    }
+/* 2. VOKAL-FARGE: Denne tvinger vi på vokal-kolonnene */
+body.show-vowel-bg .is-vowel-cell { 
+    background-color: var(--vokal-farge) !important; 
 }
-    </style>
+
+/* 3. TOMME FELT (Grå): Når bryteren er PÅ */
+body:not(.hide-ends-active) .inactive { 
+    background-color: #d1d1d1 !important; 
+}
+
+/* 4. SKJUL TOMME FELT: Når bryteren er AV */
+/* Her tvinger vi de tomme cellene til å enten være hvite ELLER røde (hvis vokal) */
+body.hide-ends-active .inactive { 
+    background-color: white !important; 
+}
+
+/* 5. NØKKELEN: Gjør tomme vokal-celler røde selv når de er "skjulte" */
+body.hide-ends-active.show-vowel-bg .is-vowel-cell { 
+    background-color: var(--vokal-farge) !important; 
+}
+
+    .header-row td { border: 2px solid #000; height: 48px; }
+    .v-text { color: var(--vokal-tekst); }
+    .k-text { color: var(--konsonant-tekst); }
+    .header-row .k-text { color: var(--konsonant-overskrift); }
+
+    /* EKSTRA STIL */
+    body.uppercase-mode td, body.uppercase-mode .word-list-box { text-transform: uppercase; }
+    .cell-content { display: none; }
+    .show-fasit .cell-content { display: block; }
+    .word-list-box { border: 2px solid #333; padding: 25px; min-width: 200px; background: white; }
+    .word-list-box h3 { margin: 0 0 15px 0; text-align: center; border-bottom: 2px solid #333; padding-bottom: 8px; }
+    .word-list-box ul { list-style: none; padding: 0; }
+    .word-list-box li { padding: 6px 0; border-bottom: 1px solid #eee; }
+
+    .alt-indicator { display: none; position: absolute; top: 1px; right: 1px; color: var(--alt-match); font-size: 0.5rem; }
+    .show-fasit .alt-indicator { display: block; }
+    .show-fasit .is-alt-start { outline: 2px dashed var(--alt-match); outline-offset: -4px; }
+
+    @media print {
+        .sidebar { display: none !important; }
+        body, .main-content { background-color: white !important; padding: 0 !important; display: block !important; }
+        #capture-area { box-shadow: none !important; display: inline-flex !important; gap: 50px !important; }
+        * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    }
+</style>
 </head>
 <body>
 
 <div class="sidebar">
     <div class="sidebar-logo">
-    <img src="gitter_02.png" alt="Gitter Logo">
-</div>
+        <img src="gitter_02.png" alt="Gitter Logo">
+    </div>
     
     <textarea id="wordInput" placeholder="Ord (ett per linje)..."></textarea>
 
@@ -248,6 +193,14 @@
             </label>
         </div>
 
+<div class="control-item">
+    <span>STORE bokstaver</span>
+    <label class="switch">
+        <input type="checkbox" id="toggleCase" onchange="updateView()">
+        <span class="slider"></span>
+    </label>
+</div>
+
         <div class="control-item">
             <span style="color: #ff7675;">Vis fasit</span>
             <label class="switch">
@@ -259,9 +212,11 @@
 
     <div class="btn-group">
         <button class="action-btn btn-generate" onclick="generate()">Generer gitter</button>
-        <button class="action-btn" style="background-color: #9b59b6; color: white;" onclick="window.print()">Skriv ut</button>
-        <button class="action-btn btn-download" onclick="downloadFullImage()">Last ned bilde</button>
-        <button class="action-btn btn-reset" onclick="resetForm()">Nullstill</button>
+        <button class="action-btn" style="background-color: #e67e22; color: white;" onclick="resetForm()">Nullstill</button>
+        <div class="btn-row">
+            <button class="action-btn" style="background-color: #2980b9; color: white;" onclick="window.print()">Skriv ut</button>
+            <button class="action-btn" style="background-color: #9b59b6; color: white;" onclick="downloadFullImage()">Last ned bilde</button>
+        </div>
     </div>
 </div>
 
@@ -278,16 +233,25 @@
 <script>
     const vokaler = "aeiouyæøå";
 
-    function updateView() {
-        const output = document.getElementById('gridOutput');
-        const body = document.body;
-        if (!document.getElementById('toggleEnds').checked) body.classList.add('hide-ends-active');
-        else body.classList.remove('hide-ends-active');
-        if (document.getElementById('toggleVowels').checked) output.classList.add('show-vowel-bg');
-        else output.classList.remove('show-vowel-bg');
-        if (document.getElementById('toggleFasit').checked) output.classList.add('show-fasit');
-        else output.classList.remove('show-fasit');
-    }
+function updateView() {
+    const body = document.body;
+    
+    // Marker tomme felt (vender logikken for å matche .hide-ends-active)
+    if (!document.getElementById('toggleEnds').checked) body.classList.add('hide-ends-active');
+    else body.classList.remove('hide-ends-active');
+    
+    // Vokal-farge (Legg denne på body i stedet for output)
+    if (document.getElementById('toggleVowels').checked) body.classList.add('show-vowel-bg');
+    else body.classList.remove('show-vowel-bg');
+    
+    // Fasit
+    if (document.getElementById('toggleFasit').checked) body.classList.add('show-fasit');
+    else body.classList.remove('show-fasit');
+
+    // Store bokstaver
+    if (document.getElementById('toggleCase').checked) body.classList.add('uppercase-mode');
+    else body.classList.remove('uppercase-mode');
+}
 
     function resetForm() {
         if(!confirm("Nullstille alt?")) return;
