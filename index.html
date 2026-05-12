@@ -2,7 +2,7 @@
 <html lang="no">
 <head>
     <meta charset="UTF-8">
-    <title>Gitter-generator</title>
+    <title>Gitter-generator Pro</title>
     <link rel="icon" type="image/png" href="gitter_01.png">
     <link rel="apple-touch-icon" href="gitter_01.png">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -41,7 +41,7 @@
         width: 350px;
         background-color: var(--sidebar-bg);
         color: var(--sidebar-text);
-        padding: 20px 15px;
+        padding: 15px; box-sizing: border-box; 
         box-sizing: border-box;
         display: flex;
         flex-direction: column;
@@ -73,11 +73,10 @@
         font-family: inherit; font-size: 0.9rem; box-sizing: border-box; margin-bottom: 15px; background-color: #ecf0f1;
     }
 
-/* Legg denne til i CSS-en din */
-.action-btn:hover {
-    filter: brightness(1.1); /* Lyser opp litt når du holder over */
-    transform: translateY(-1px); /* Løfter seg et hakk */
-}
+    .action-btn:hover {
+        filter: brightness(1.1);
+        transform: translateY(-1px);
+    }
 
     /* KONTROLLER */
     .control-item {
@@ -98,191 +97,198 @@
 
     /* HOVEDOMRÅDE OG TABELL */
     .main-content { flex-grow: 1; overflow-y: auto; display: flex; justify-content: center; align-items: flex-start; padding: 40px; }
-    #capture-area { background: white; padding: 40px; border-radius: 5px; display: inline-flex; gap: 50px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
-    .table-container { display: flex; align-items: flex-start; }
+    #capture-area { background: white; padding: 40px; border-radius: 5px; display: inline-flex; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+    .table-container { display: flex; align-items: flex-start; gap: 20px; }
     .row-numbers { display: flex; flex-direction: column; padding-top: 55px; }
     .num-item { height: 42px; display: flex; align-items: center; justify-content: flex-end; width: 30px; padding-right: 10px; font-style: italic; font-size: 0.9rem; color: #7f8c8d; }
 
     table { border-collapse: collapse; }
     td, .word-list-box { font-family: 'Trykkskrift', sans-serif; }
 
-    /* --- CELLER OG FARGER (DEN VIKTIGE DELEN) --- */
+    td { 
+        border: 1px solid #000; 
+        width: 42px; 
+        height: 42px; 
+        text-align: center; 
+        font-size: 1.3rem; 
+        position: relative;
+        background-color: white;
+    }
 
-/* 1. Grunnoppsett: Gjør alle celler gjennomsiktige som standard */
-/* 1. FJERN alle andre td-regler og bruk denne som base */
-td { 
-    border: 1px solid #000; 
-    width: 42px; 
-    height: 42px; 
-    text-align: center; 
-    font-size: 1.3rem; 
-    position: relative;
-    background-color: white; /* Alle starter som hvite */
-}
-
-/* 2. VOKAL-FARGE: Denne tvinger vi på vokal-kolonnene */
-body.show-vowel-bg .is-vowel-cell { 
-    background-color: var(--vokal-farge) !important; 
-}
-
-/* 3. TOMME FELT (Grå): Når bryteren er PÅ */
-body:not(.hide-ends-active) .inactive { 
-    background-color: #d1d1d1 !important; 
-}
-
-/* 4. SKJUL TOMME FELT: Når bryteren er AV */
-/* Her tvinger vi de tomme cellene til å enten være hvite ELLER røde (hvis vokal) */
-body.hide-ends-active .inactive { 
-    background-color: white !important; 
-}
-
-/* 5. NØKKELEN: Gjør tomme vokal-celler røde selv når de er "skjulte" */
-body.hide-ends-active.show-vowel-bg .is-vowel-cell { 
-    background-color: var(--vokal-farge) !important; 
-}
+    body.show-vowel-bg .is-vowel-cell { background-color: var(--vokal-farge) !important; }
+    body:not(.hide-ends-active) .inactive { background-color: #d1d1d1 !important; }
+    body.hide-ends-active .inactive { background-color: white !important; }
+    body.hide-ends-active.show-vowel-bg .is-vowel-cell { background-color: var(--vokal-farge) !important; }
 
     .header-row td { border: 2px solid #000; height: 48px; }
     .v-text { color: var(--vokal-tekst); }
     .k-text { color: var(--konsonant-tekst); }
     .header-row .k-text { color: var(--konsonant-overskrift); }
 
-    /* EKSTRA STIL */
     body.uppercase-mode td, body.uppercase-mode .word-list-box { text-transform: uppercase; }
     .cell-content { display: none; }
     .show-fasit .cell-content { display: block; }
 
-/* Ny beholder som styrer retningen og bredden */
-.content-wrapper {
-    display: inline-flex;
-    flex-direction: column;
-    align-items: stretch; /* Gjør at ordlisten strekker seg til gitterets bredde */
-    gap: 20px;
-}
 
-#capture-area { 
-    background: white; 
-    padding: 40px; 
-    border-radius: 5px; 
-    display: none; /* Endres til inline-flex i JS */
-    box-shadow: 0 10px 30px rgba(0,0,0,0.05); 
-}
-
-/* Oppdatert ordliste-boks */
+/* ORDLISTE SOM FØLGER GITTERET */
 .word-list-box { 
     border: 2px solid #333; 
     padding: 15px; 
+    margin-top: 20px; 
     background: white; 
-    box-sizing: border-box;
-    width: 100%; /* Tar all tilgjengelig bredde i wrapperen */
+    width: 100%; 
+    box-sizing: border-box; 
+    
+    /* DISSE TO LINJENE LØSER PROBLEMET: */
+    display: block; 
+    min-width: 100%; 
+    max-width: 0; 
 }
 
 .word-list-box h3 { 
     margin: 0 0 10px 0; 
     text-align: center; 
     border-bottom: 2px solid #333; 
-    padding-bottom: 5px;
-    font-size: 1.1rem;
+    padding-bottom: 5px; 
 }
 
-/* Sørger for at ordene står etter hverandre (horisontalt) */
-.word-list-box ul { 
+.word-list-box ul {  
     list-style: none; 
     padding: 0; 
     margin: 0;
     display: flex; 
     flex-wrap: wrap; 
     justify-content: center; 
-    gap: 10px 25px; 
+    gap: 10px 20px; 
 }
 
 .word-list-box li { 
     padding: 2px 0; 
-    border-bottom: 1px solid #eee;
-    font-size: 1.1rem;
-    white-space: nowrap; /* Hindrer at ord deles over to linjer */
+    border: none; 
+    white-space: nowrap; /* Sikrer at selve ordet ikke deles, bare lista */
 }
 
-@media print {
-    .sidebar { display: none !important; }
-    body, .main-content { background-color: white !important; padding: 0 !important; display: block !important; }
-    #capture-area { 
-        box-shadow: none !important; 
-        display: inline-flex !important; 
-        padding: 20px !important;
-    }
-    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    .alt-indicator { display: none; position: absolute; top: 1px; right: 1px; color: var(--alt-match); font-size: 0.5rem; }
+    .show-fasit .alt-indicator { display: block; }
+    .show-fasit .is-alt-start { outline: 2px dashed var(--alt-match); outline-offset: -4px; }
 
-    /* Linjene som sikrer god visning i forhåndsvisning og print */
-    td {
-        border: 1pt solid #000 !important; 
-    }
-    
-    .header-row td {
-        border: 2pt solid #000 !important; 
-    }
-} /* <--- Sjekk at denne er der! */
-
-
-/* 1. Juster selve cellen i toppraden */
-.header-row td {
-    height: 48px; 
-    vertical-align: middle; 
-    padding: 0; /* Fjerner eventuell indre marg som dytter bokstaven ned */
+/* Denne manglet for at menyen skal kunne åpnes */
+.dropdown-menu.show {
+    display: block !important;
 }
 
-/* 2. Juster bokstaven (V/K) inni cellen */
-.header-row td span { 
-    font-weight: bold; 
-    font-size: 2.5rem; 
-    line-height: 0.8; /* Prøv 0.8 eller 0.9 for å virkelig "stramme opp" under bokstaven */
-    display: block; 
-    margin-top: 10px; /* Juster denne verdien opp eller ned for å plassere bokstaven perfekt */
+/* HAMBURGER MENY-KNAPP */
+.menu-container {
+    position: relative;
+    margin-bottom: 10px;
 }
+
+.hamburger {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    cursor: pointer;
+    width: 20px;
+    padding: 5px;
+}
+
+.hamburger span {
+    display: block;
+    width: 100%;
+    height: 2px;
+    background-color: white;
+    border-radius: 1px;
+    transition: 0.3s;
+}
+
+/* SELVE MENYEN SOM KOMMER FREM */
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 25px;
+    left: 0;
+    background-color: #2c3e50;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 6px;
+    width: 200px;
+    z-index: 100;
+    box-shadow: 5px 5px 15px rgba(0,0,0,0.5);
+}
+
+.menu-icon {
+    width: 20px;          /* Størrelsen på bildet */
+    height: 20px;
+    margin-right: 10px;   /* Avstand fra bilde til tekst */
+    vertical-align: middle; /* Sentrerer bildet i forhold til teksten */
+    object-fit: contain;  /* Sørger for at bildet ikke blir strukket */
+    border-radius: 3px;   /* Valgfritt: runder av hjørnene på bildene litt */
+}
+.dropdown-menu a {
+    display: block;
+    color: white;
+    padding: 12px 15px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.dropdown-menu a:hover {
+    background-color: #34495e;
+}
+
+    @media print {
+        .sidebar { display: none !important; }
+        body, .main-content { background-color: white !important; padding: 0 !important; display: block !important; }
+        #capture-area { box-shadow: none !important; display: inline-flex !important; }
+        * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    }
 </style>
 </head>
 <body>
 
 <div class="sidebar">
-    <div class="sidebar-logo">
-        <img src="gitter_02.png" alt="Gitter Logo">
-    </div>
-    
-    <textarea id="wordInput" placeholder="Skriv ord her..."></textarea>
+    <div class="sidebar-header" style="display: flex; align-items: center; margin-bottom: 20px;">
+        
+        <div class="menu-container" style="margin-bottom: 0; margin-right: 15px;">
+            <div class="hamburger" onclick="toggleMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+    <div id="myDropdown" class="dropdown-menu">
+    <a href="https://77tor.github.io/gitter/" target="_blank">
+        <img src="gitter_02.png" class="menu-icon"> Gitter-ord
+    </a>
+    <a href="https://77tor.github.io/Silhuettord/" target="_blank">
+        <img src="silhuett-ord_05.png" class="menu-icon"> Silhuett-ord
+    </a>
+    <a href="https://77tor.github.io/ord-sok/" target="_blank">
+        <img src="ord-sok.png" class="menu-icon"> Ordsøk
+    </a>
+</div>
+        </div>
 
+        <h2 style="margin: 0; flex-grow: 1; text-align: center;">Gitter-generator</h2>
+    </div>
+    <textarea id="wordInput" placeholder="Skriv ord her..."></textarea>
     <div class="sidebar-controls">
         <div class="control-item">
             <span>Marker tomme felt</span>
-            <label class="switch">
-                <input type="checkbox" id="toggleEnds" onchange="updateView()">
-                <span class="slider"></span>
-            </label>
+            <label class="switch"><input type="checkbox" id="toggleEnds" onchange="updateView()"><span class="slider"></span></label>
         </div>
-
         <div class="control-item">
             <span>Vokal-farge</span>
-            <label class="switch">
-                <input type="checkbox" id="toggleVowels" onchange="updateView()">
-                <span class="slider"></span>
-            </label>
+            <label class="switch"><input type="checkbox" id="toggleVowels" onchange="updateView()"><span class="slider"></span></label>
         </div>
-
-<div class="control-item">
-    <span>STORE bokstaver</span>
-    <label class="switch">
-        <input type="checkbox" id="toggleCase" onchange="updateView()">
-        <span class="slider"></span>
-    </label>
-</div>
-
+        <div class="control-item">
+            <span>STORE bokstaver</span>
+            <label class="switch"><input type="checkbox" id="toggleCase" onchange="updateView()"><span class="slider"></span></label>
+        </div>
         <div class="control-item">
             <span style="color: #ff7675;">Vis fasit</span>
-            <label class="switch">
-                <input type="checkbox" id="toggleFasit" onchange="updateView()">
-                <span class="slider"></span>
-            </label>
+            <label class="switch"><input type="checkbox" id="toggleFasit" onchange="updateView()"><span class="slider"></span></label>
         </div>
     </div>
-
     <div class="btn-group">
         <button class="action-btn btn-generate" onclick="generate()">Generer gitter</button>
         <button class="action-btn" style="background-color: #ff7675; color: white;" onclick="resetForm()">Nullstill</button>
@@ -298,52 +304,43 @@ body.hide-ends-active.show-vowel-bg .is-vowel-cell {
         <img src="gitter_03.png" alt="Velkomstbilde" style="max-width: 400px; opacity: 0.3; filter: grayscale(100%);">
     </div>
 
-<div id="capture-area">
-    <div class="content-wrapper"> <div class="table-container">
+    <div id="capture-area" style="display: none;">
+        <div class="table-container">
             <div id="numberColumn" class="row-numbers"></div>
-            <div id="gridOutput"></div>
+            <div style="display: table;">
+                <div id="gridOutput"></div>
+                <div id="wordListOutput"></div>
+            </div>
         </div>
-        <div id="wordListOutput"></div>
     </div>
 </div>
 
 <script>
     const vokaler = "aeiouyæøå";
 
-function updateView() {
-    const body = document.body;
-    
-    // Marker tomme felt (vender logikken for å matche .hide-ends-active)
-    if (!document.getElementById('toggleEnds').checked) body.classList.add('hide-ends-active');
-    else body.classList.remove('hide-ends-active');
-    
-    // Vokal-farge (Legg denne på body i stedet for output)
-    if (document.getElementById('toggleVowels').checked) body.classList.add('show-vowel-bg');
-    else body.classList.remove('show-vowel-bg');
-    
-    // Fasit
-    if (document.getElementById('toggleFasit').checked) body.classList.add('show-fasit');
-    else body.classList.remove('show-fasit');
+    function updateView() {
+        const body = document.body;
+        if (!document.getElementById('toggleEnds').checked) body.classList.add('hide-ends-active');
+        else body.classList.remove('hide-ends-active');
+        if (document.getElementById('toggleVowels').checked) body.classList.add('show-vowel-bg');
+        else body.classList.remove('show-vowel-bg');
+        if (document.getElementById('toggleFasit').checked) body.classList.add('show-fasit');
+        else body.classList.remove('show-fasit');
+        if (document.getElementById('toggleCase').checked) body.classList.add('uppercase-mode');
+        else body.classList.remove('uppercase-mode');
+    }
 
-    // Store bokstaver
-    if (document.getElementById('toggleCase').checked) body.classList.add('uppercase-mode');
-    else body.classList.remove('uppercase-mode');
-}
-
-function resetForm() {
-    if(!confirm("Nullstille alt?")) return;
-    document.getElementById('wordInput').value = "";
-    document.getElementById('gridOutput').innerHTML = "";
-    document.getElementById('numberColumn').innerHTML = "";
-    document.getElementById('wordListOutput').innerHTML = "";
-    
-    // VISNING: Vis bildet igjen og skjul gitteret
-    document.getElementById('placeholder-image').style.display = 'flex';
-    document.getElementById('capture-area').style.display = 'none';
-    
-    document.querySelectorAll('input[type=checkbox]').forEach(el => el.checked = false);
-    updateView();
-}
+    function resetForm() {
+        if(!confirm("Nullstille alt?")) return;
+        document.getElementById('wordInput').value = "";
+        document.getElementById('gridOutput').innerHTML = "";
+        document.getElementById('numberColumn').innerHTML = "";
+        document.getElementById('wordListOutput').innerHTML = "";
+        document.getElementById('placeholder-image').style.display = 'flex';
+        document.getElementById('capture-area').style.display = 'none';
+        document.querySelectorAll('input[type=checkbox]').forEach(el => el.checked = false);
+        updateView();
+    }
 
     function getPattern(word) {
         return word.toLowerCase().split('').map(c => vokaler.includes(c) ? 'V' : 'K');
@@ -352,12 +349,10 @@ function resetForm() {
     function buildMaster(wordData) {
         let master = [...wordData[0].pattern];
         let placements = [{ start: 0, length: wordData[0].pattern.length }];
-
         for (let i = 1; i < wordData.length; i++) {
             let p = wordData[i].pattern;
             let minNewLength = Infinity;
             let finalShift = 0;
-
             for (let s = -p.length; s <= master.length; s++) {
                 let possibleMatch = true;
                 for (let j = 0; j < p.length; j++) {
@@ -370,13 +365,9 @@ function resetForm() {
                     let currentStart = Math.min(0, s);
                     let currentEnd = Math.max(master.length, s + p.length);
                     let totalLen = currentEnd - currentStart;
-                    if (totalLen < minNewLength) {
-                        minNewLength = totalLen;
-                        finalShift = s;
-                    }
+                    if (totalLen < minNewLength) { minNewLength = totalLen; finalShift = s; }
                 }
             }
-
             let newMaster = [];
             let offset = finalShift < 0 ? Math.abs(finalShift) : 0;
             if (finalShift < 0) {
@@ -384,30 +375,22 @@ function resetForm() {
                 for(let k=0; k<offset; k++) newMaster.push(p[k]);
                 master.forEach(m => newMaster.push(m));
                 finalShift = 0;
-            } else {
-                newMaster = [...master];
-            }
-            for (let j = 0; j < p.length; j++) {
-                newMaster[finalShift + j] = p[j];
-            }
+            } else { newMaster = [...master]; }
+            for (let j = 0; j < p.length; j++) newMaster[finalShift + j] = p[j];
             master = newMaster;
             placements.push({ start: finalShift, length: p.length });
         }
         return { master, placements };
     }
 
-function generate() {
-    const input = document.getElementById('wordInput').value.trim();
-    if (input.length === 0) return;
+    function generate() {
+        const input = document.getElementById('wordInput').value.trim();
+        if (input.length === 0) return;
 
-    // VISNING: Skjul bildet og vis gitter-området
-    document.getElementById('placeholder-image').style.display = 'none';
-    document.getElementById('capture-area').style.display = 'inline-flex';
-        
+        document.getElementById('placeholder-image').style.display = 'none';
+        document.getElementById('capture-area').style.display = 'inline-flex';
 
-        // ENDRET HER: Splitter på både komma og alle typer mellomrom/linjeskift
         const rawWords = input.split(/[\s,]+/).map(w => w.trim()).filter(w => w !== "");
-        
         if (rawWords.length === 0) return;
 
         let wordData = rawWords.map(w => ({ word: w, pattern: getPattern(w) }));
@@ -423,7 +406,6 @@ function generate() {
         let table = document.createElement('table');
         let headerRow = document.createElement('tr');
         headerRow.className = "header-row";
-        
         masterPattern.forEach(char => {
             let td = document.createElement('td');
             if (char === 'V') td.classList.add('is-vowel-cell');
@@ -436,7 +418,6 @@ function generate() {
             let row = document.createElement('tr');
             let letters = data.word.split('');
             let pos = result.placements[idx];
-
             let altStarts = [];
             for (let s = 0; s <= maxLength - data.pattern.length; s++) {
                 let match = true;
@@ -445,15 +426,12 @@ function generate() {
                 }
                 if (match && s !== pos.start) altStarts.push(s);
             }
-
             for (let i = 0; i < maxLength; i++) {
                 let td = document.createElement('td');
                 if (masterPattern[i] === 'V') td.classList.add('is-vowel-cell');
                 if (i >= pos.start && i < pos.start + pos.length) {
                     td.innerHTML = `<span class="cell-content">${letters[i - pos.start]}</span>`;
-                } else {
-                    td.classList.add('inactive');
-                }
+                } else { td.classList.add('inactive'); }
                 if (altStarts.includes(i)) {
                     td.classList.add('is-alt-start');
                     td.innerHTML += `<span class="alt-indicator">ALT</span>`;
@@ -469,13 +447,13 @@ function generate() {
         document.getElementById('wordListOutput').innerHTML = `<div class="word-list-box"><h3>Ordliste</h3><ul>${sorted.map(w => `<li>${w}</li>`).join('')}</ul></div>`;
         updateView();
     }
+
     function downloadFullImage() {
         const element = document.getElementById('capture-area');
         if (!element || document.getElementById('gridOutput').innerHTML === "") {
             alert("Generer et gitter først!");
             return;
         }
-
         html2canvas(element, {
             backgroundColor: "#ffffff",
             scale: 2,
@@ -492,9 +470,23 @@ function generate() {
             link.click();
         });
     }
+function toggleMenu() {
+    document.getElementById("myDropdown").classList.toggle("show");
+}
 
+// Lukker menyen hvis man klikker utenfor den
+window.onclick = function(event) {
+    if (!event.target.closest('.menu-container')) {
+        var dropdowns = document.getElementsByClassName("dropdown-menu");
+        for (var i = 0; i < dropdowns.length; i++) {
+            var openDropdown = dropdowns[i];
+            if (openDropdown.classList.contains('show')) {
+                openDropdown.classList.remove('show');
+            }
+        }
+    }
+}
     updateView();
 </script>
-
 </body>
 </html>
