@@ -2,7 +2,7 @@
 <html lang="no">
 <head>
     <meta charset="UTF-8">
-    <title>Gitter-generator Pro</title>
+    <title>Gitter-generator</title>
     <link rel="icon" type="image/png" href="gitter_01.png">
     <link rel="apple-touch-icon" href="gitter_01.png">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -59,7 +59,7 @@
     }
 
     .sidebar-logo img {
-        max-width: 150px;
+        max-width: 100px;
         height: auto;
         display: block;
         margin: 0 auto;
@@ -150,21 +150,94 @@ body.hide-ends-active.show-vowel-bg .is-vowel-cell {
     body.uppercase-mode td, body.uppercase-mode .word-list-box { text-transform: uppercase; }
     .cell-content { display: none; }
     .show-fasit .cell-content { display: block; }
-    .word-list-box { border: 2px solid #333; padding: 25px; min-width: 200px; background: white; }
-    .word-list-box h3 { margin: 0 0 15px 0; text-align: center; border-bottom: 2px solid #333; padding-bottom: 8px; }
-    .word-list-box ul { list-style: none; padding: 0; }
-    .word-list-box li { padding: 6px 0; border-bottom: 1px solid #eee; }
 
-    .alt-indicator { display: none; position: absolute; top: 1px; right: 1px; color: var(--alt-match); font-size: 0.5rem; }
-    .show-fasit .alt-indicator { display: block; }
-    .show-fasit .is-alt-start { outline: 2px dashed var(--alt-match); outline-offset: -4px; }
+/* Ny beholder som styrer retningen og bredden */
+.content-wrapper {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: stretch; /* Gjør at ordlisten strekker seg til gitterets bredde */
+    gap: 20px;
+}
 
-    @media print {
-        .sidebar { display: none !important; }
-        body, .main-content { background-color: white !important; padding: 0 !important; display: block !important; }
-        #capture-area { box-shadow: none !important; display: inline-flex !important; gap: 50px !important; }
-        * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+#capture-area { 
+    background: white; 
+    padding: 40px; 
+    border-radius: 5px; 
+    display: none; /* Endres til inline-flex i JS */
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05); 
+}
+
+/* Oppdatert ordliste-boks */
+.word-list-box { 
+    border: 2px solid #333; 
+    padding: 15px; 
+    background: white; 
+    box-sizing: border-box;
+    width: 100%; /* Tar all tilgjengelig bredde i wrapperen */
+}
+
+.word-list-box h3 { 
+    margin: 0 0 10px 0; 
+    text-align: center; 
+    border-bottom: 2px solid #333; 
+    padding-bottom: 5px;
+    font-size: 1.1rem;
+}
+
+/* Sørger for at ordene står etter hverandre (horisontalt) */
+.word-list-box ul { 
+    list-style: none; 
+    padding: 0; 
+    margin: 0;
+    display: flex; 
+    flex-wrap: wrap; 
+    justify-content: center; 
+    gap: 10px 25px; 
+}
+
+.word-list-box li { 
+    padding: 2px 0; 
+    border-bottom: 1px solid #eee;
+    font-size: 1.1rem;
+    white-space: nowrap; /* Hindrer at ord deles over to linjer */
+}
+
+@media print {
+    .sidebar { display: none !important; }
+    body, .main-content { background-color: white !important; padding: 0 !important; display: block !important; }
+    #capture-area { 
+        box-shadow: none !important; 
+        display: inline-flex !important; 
+        padding: 20px !important;
     }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
+    /* Linjene som sikrer god visning i forhåndsvisning og print */
+    td {
+        border: 1pt solid #000 !important; 
+    }
+    
+    .header-row td {
+        border: 2pt solid #000 !important; 
+    }
+} /* <--- Sjekk at denne er der! */
+
+
+/* 1. Juster selve cellen i toppraden */
+.header-row td {
+    height: 48px; 
+    vertical-align: middle; 
+    padding: 0; /* Fjerner eventuell indre marg som dytter bokstaven ned */
+}
+
+/* 2. Juster bokstaven (V/K) inni cellen */
+.header-row td span { 
+    font-weight: bold; 
+    font-size: 2.5rem; 
+    line-height: 0.8; /* Prøv 0.8 eller 0.9 for å virkelig "stramme opp" under bokstaven */
+    display: block; 
+    margin-top: 10px; /* Juster denne verdien opp eller ned for å plassere bokstaven perfekt */
+}
 </style>
 </head>
 <body>
@@ -174,7 +247,7 @@ body.hide-ends-active.show-vowel-bg .is-vowel-cell {
         <img src="gitter_02.png" alt="Gitter Logo">
     </div>
     
-    <textarea id="wordInput" placeholder="Ord (ett per linje)..."></textarea>
+    <textarea id="wordInput" placeholder="Skriv ord her..."></textarea>
 
     <div class="sidebar-controls">
         <div class="control-item">
@@ -212,17 +285,21 @@ body.hide-ends-active.show-vowel-bg .is-vowel-cell {
 
     <div class="btn-group">
         <button class="action-btn btn-generate" onclick="generate()">Generer gitter</button>
-        <button class="action-btn" style="background-color: #7f8c8d; color: white;" onclick="resetForm()">Nullstill</button>
+        <button class="action-btn" style="background-color: #ff7675; color: white;" onclick="resetForm()">Nullstill</button>
         <div class="btn-row">
-            <button class="action-btn" style="background-color: #2980b9; color: white;" onclick="window.print()">Skriv ut</button>
+            <button class="action-btn" style="background-color: #3b82f6; color: white;" onclick="window.print()">Skriv ut</button>
             <button class="action-btn" style="background-color: #9b59b6; color: white;" onclick="downloadFullImage()">Last ned bilde</button>
         </div>
     </div>
 </div>
 
 <div class="main-content">
-    <div id="capture-area">
-        <div class="table-container">
+    <div id="placeholder-image" style="display: flex; justify-content: center; align-items: center; width: 100%; height: 100%;">
+        <img src="gitter_03.png" alt="Velkomstbilde" style="max-width: 400px; opacity: 0.3; filter: grayscale(100%);">
+    </div>
+
+<div id="capture-area">
+    <div class="content-wrapper"> <div class="table-container">
             <div id="numberColumn" class="row-numbers"></div>
             <div id="gridOutput"></div>
         </div>
@@ -253,15 +330,20 @@ function updateView() {
     else body.classList.remove('uppercase-mode');
 }
 
-    function resetForm() {
-        if(!confirm("Nullstille alt?")) return;
-        document.getElementById('wordInput').value = "";
-        document.getElementById('gridOutput').innerHTML = "";
-        document.getElementById('numberColumn').innerHTML = "";
-        document.getElementById('wordListOutput').innerHTML = "";
-        document.querySelectorAll('input[type=checkbox]').forEach(el => el.checked = false);
-        updateView();
-    }
+function resetForm() {
+    if(!confirm("Nullstille alt?")) return;
+    document.getElementById('wordInput').value = "";
+    document.getElementById('gridOutput').innerHTML = "";
+    document.getElementById('numberColumn').innerHTML = "";
+    document.getElementById('wordListOutput').innerHTML = "";
+    
+    // VISNING: Vis bildet igjen og skjul gitteret
+    document.getElementById('placeholder-image').style.display = 'flex';
+    document.getElementById('capture-area').style.display = 'none';
+    
+    document.querySelectorAll('input[type=checkbox]').forEach(el => el.checked = false);
+    updateView();
+}
 
     function getPattern(word) {
         return word.toLowerCase().split('').map(c => vokaler.includes(c) ? 'V' : 'K');
@@ -314,9 +396,18 @@ function updateView() {
         return { master, placements };
     }
 
-    function generate() {
-        const input = document.getElementById('wordInput').value.trim();
-        const rawWords = input.split('\n').map(w => w.trim()).filter(w => w !== "");
+function generate() {
+    const input = document.getElementById('wordInput').value.trim();
+    if (input.length === 0) return;
+
+    // VISNING: Skjul bildet og vis gitter-området
+    document.getElementById('placeholder-image').style.display = 'none';
+    document.getElementById('capture-area').style.display = 'inline-flex';
+        
+
+        // ENDRET HER: Splitter på både komma og alle typer mellomrom/linjeskift
+        const rawWords = input.split(/[\s,]+/).map(w => w.trim()).filter(w => w !== "");
+        
         if (rawWords.length === 0) return;
 
         let wordData = rawWords.map(w => ({ word: w, pattern: getPattern(w) }));
@@ -378,7 +469,6 @@ function updateView() {
         document.getElementById('wordListOutput').innerHTML = `<div class="word-list-box"><h3>Ordliste</h3><ul>${sorted.map(w => `<li>${w}</li>`).join('')}</ul></div>`;
         updateView();
     }
-
     function downloadFullImage() {
         const element = document.getElementById('capture-area');
         if (!element || document.getElementById('gridOutput').innerHTML === "") {
