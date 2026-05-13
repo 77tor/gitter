@@ -2,263 +2,201 @@
 <html lang="no">
 <head>
     <meta charset="UTF-8">
-    <title>Silhuett-ord</title>
-    <link rel="icon" type="image/png" href="silhuett-ord_02.png">
-    <link rel="apple-touch-icon" href="silhuett-ord_02.png">
+    <title>Gitter-generator Pro</title>
+    <link rel="icon" type="image/png" href="gitter_01.png">
+    <link rel="apple-touch-icon" href="gitter_01.png">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+    @font-face {
+        font-family: 'Trykkskrift';
+        src: url('trykkskrift.otf') format('opentype');
+        font-weight: normal;
+        font-style: normal;
+    }
 
+    :root {
+        --vokal-farge: #ffcccc; 
+        --vokal-tekst: #e74c3c;
+        --konsonant-tekst: #2c3e50;
+        --konsonant-overskrift: #2980b9;
+        --alt-match: #27ae60;
+        --sidebar-bg: #243447; 
+        --item-bg: #2c3e50;    
+        --accent-green: #27ae60;
+        --sidebar-text: #ffffff;
+        --main-bg: #f0f2f5;
+    }
 
-    <style>
-        @font-face {
-            font-family: 'Trykkskrift-1';
-            src: url('Trykkskrift-1.otf') format('opentype'),
-                 url('Trykkskrift-1.ttf') format('truetype');
-            font-weight: normal; font-style: normal;
-        }
+    body { 
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+        margin: 0; 
+        display: flex; 
+        height: 100vh; 
+        background-color: var(--main-bg); 
+        color: #333;
+    }
 
-        :root {
-            --unit-size: 42px; 
-            --stue-height: 42px;
-            --total-height: 70px;
-            --diff: calc(var(--total-height) - var(--stue-height));
-            --primary: #243447;
-            --accent: #3498db;
-        }
+    /* SIDEBAR OG LOGO */
+    .sidebar {
+        width: 350px;
+        background-color: var(--sidebar-bg);
+        color: var(--sidebar-text);
+        padding: 15px; box-sizing: border-box; 
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 4px 0 15px rgba(0,0,0,0.3);
+        z-index: 10;
+    }
 
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; margin: 0; background: #f0f2f5; color: #333; }
+    .sidebar-logo {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
 
-        /* SIDEBAR */
-        #sidebar {
-            width: 350px; padding: 15px; background: var(--primary); color: white;
-            height: 100vh; overflow-y: auto; position: fixed; box-sizing: border-box;
-            z-index: 100; box-shadow: 2px 0 10px rgba(0,0,0,0.2);
-        }
-        .sidebar-logo { width: 140px; margin: 0 auto 25px; display: block; }
-        
-        .nav-btn { 
-            background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); 
-            padding: 10px; margin-bottom: 12px; border-radius: 10px; cursor: pointer; 
-            text-align: left; font-weight: bold; width: 100%; transition: all 0.2s;
-        }
-        .nav-btn:hover { background: var(--accent); border-color: var(--accent); transform: translateY(-2px); }
+    .sidebar-logo img {
+        max-width: 100px;
+        height: auto;
+        display: block;
+        margin: 0 auto;
+        border-radius: 4px;
+    }
 
+    .sidebar h2 { margin: 0 0 15px 0; font-size: 1.1rem; text-align: center; text-transform: uppercase; }
 
-        .toggle-container {
-            display: flex; align-items: center; justify-content: space-between;
-            background: rgba(0,0,0,0.2); padding: 8px 12px; border-radius: 8px; margin-bottom: 8px;
-            font-size: 0.9rem;
-        }
-        .switch { position: relative; display: inline-block; width: 40px; height: 20px; flex-shrink: 0; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 20px; }
-        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: #27ae60; }
-        input:checked + .slider:before { transform: translateX(20px); }
+    textarea { 
+        width: 100%; 
+        height: 95px; 
+        padding: 10px; 
+        border-radius: 6px; 
+        border: none; 
+        font-family: inherit; 
+        font-size: 0.9rem; 
+        box-sizing: border-box; 
+        margin-bottom: 15px; 
+        background-color: #ecf0f1;
+        resize: none;
+    }
 
-        /* PAPER & LAYOUT */
-        #preview { 
-    margin-left: 350px; 
-    padding: 20px 0; /* Litt luft i toppen og bunnen */
-    width: calc(100% - 350px); 
-    display: block; /* VIKTIG: Endre fra flex til block */
-    background: #f0f2f5; /* Matcher body-bakgrunnen */
-}
+    .action-btn:hover {
+        filter: brightness(1.1);
+        transform: translateY(-1px);
+    }
 
-/* Tvinger selve arket til å starte innholdet helt øverst */
-.paper { 
-    background: white; 
-    width: 210mm; 
-    min-height: auto; /* Endret fra 285mm til auto */
-    padding: 2mm 15mm; /* Ekstremt lav topp-padding (2mm) */
-    margin: 0 auto 40px auto; 
+    /* KONTROLLER */
+    .control-item {
+        display: flex; align-items: center; justify-content: space-between;
+        background: rgba(0,0,0,0.2); padding: 10px 12px; border-radius: 8px; margin-bottom: 8px; font-size: 0.9rem;
+    }
+
+    .switch { position: relative; display: inline-block; width: 40px; height: 20px; flex-shrink: 0; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 20px; }
+    .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+    input:checked + .slider { background-color: #27ae60; }
+    input:checked + .slider:before { transform: translateX(20px); }
+.action-btn { 
+    width: 100%; 
+    padding: 10px; 
+    border-radius: 8px; 
+    border: none; 
+    font-weight: 600; 
+    cursor: pointer; 
+    /* Fjern margin-bottom herfra hvis du vil styre det via rader */
+    margin-bottom: 0; 
+    color: white; 
+    transition: 0.2s;
     box-sizing: border-box; 
-    display: block; 
-    position: relative;
-    overflow: hidden; 
+    font-size: 0.85rem;
+    display: flex;         /* Lagt til for å sentrere tekst perfekt */
+    align-items: center;   /* Lagt til */
+    justify-content: center; /* Lagt til */
 }
 
-/* Fjerner all luft rundt overskriften og info-boksen */
-.paper-header { 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: flex-start; 
-    margin-top: 10 !important;
-    padding-top: 10 !important;
-    margin-bottom: 10px; 
-    border-bottom: 3px solid #333; 
-}
 
-/* Denne er kritisk: Nettlesere legger ofte på 20px+ her som standard */
-.paper-header h1 {
-    margin: 0 !important; 
-    padding: 0 !important;
-    line-height: 1; /* Drar teksten oppover */
-    font-size: 28px;
-    display: block;
-}
+    .btn-generate { background-color: var(--accent-green); color: white; }
+    .btn-row { display: flex; gap: 8px; }
 
-/* Sørger for at navneboksen ikke dytter ned headeren */
-.info-box { 
-    min-width: 200px; /* Justert fra width: 250px */
+    /* HOVEDOMRÅDE OG TABELL */
+    .main-content { flex-grow: 1; overflow-y: auto; display: flex; justify-content: center; align-items: flex-start; padding: 40px; }
+    #capture-area { background: white; padding: 40px; border-radius: 5px; display: inline-flex; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+    .table-container { display: flex; align-items: flex-start; gap: 20px; }
+    .row-numbers { display: flex; flex-direction: column; padding-top: 55px; }
+    .num-item { height: 42px; display: flex; align-items: center; justify-content: flex-end; width: 30px; padding-right: 10px; font-style: italic; font-size: 0.9rem; color: #7f8c8d; }
+
+    table { border-collapse: collapse; }
+    td, .word-list-box { font-family: 'Trykkskrift', sans-serif; }
+
+    td { 
+        border: 1px solid #000; 
+        width: 42px; 
+        height: 42px; 
+        text-align: center; 
+        font-size: 1.3rem; 
+        position: relative;
+        background-color: white;
+    }
+
+    body.show-vowel-bg .is-vowel-cell { background-color: var(--vokal-farge) !important; }
+    body:not(.hide-ends-active) .inactive { background-color: #d1d1d1 !important; }
+    body.hide-ends-active .inactive { background-color: white !important; }
+    body.hide-ends-active.show-vowel-bg .is-vowel-cell { background-color: var(--vokal-farge) !important; }
+
+    .header-row td { border: 2px solid #000; height: 48px; }
+    .v-text { color: var(--vokal-tekst); }
+    .k-text { color: var(--konsonant-tekst); }
+    .header-row .k-text { color: var(--konsonant-overskrift); }
+
+    body.uppercase-mode td, body.uppercase-mode .word-list-box { text-transform: uppercase; }
+    .cell-content { display: none; }
+    .show-fasit .cell-content { display: block; }
+
+
+/* ORDLISTE SOM FØLGER GITTERET */
+.word-list-box { 
     border: 2px solid #333; 
-    padding: 12px;    /* Litt mer luft inni boksen nå som datoen er borte */
-    font-size: 14px; 
-    border-radius: 4px;
-    margin-top: 15px; /* Dette flytter boksen NED fra toppen */
-    margin-right: 0;
-    align-self: flex-start; /* Holder den på toppen av header-linjen */
-}
-
-.paper-header p#task-desc {
-    margin-top: 2px;     /* Litt tettere opp mot overskriften */
-}
-
-        /* SKRIVELINJER */
-.lines-container {
-    width: 100%;          /* Bruker all tilgjengelig plass i kolonnen */
-    max-width: 300px;     /* Men stopper her så den ikke blir komisk lang */
-    margin: 12px auto;
-}
-        .l { border-bottom: 1px solid #ccc; height: 18px; width: 100%; }
-        .l.thick { border-bottom: 3px solid #333; }
-
-        /* ORDBANK PÅ SIDEN */
-        #on-page-ordbank {
-            border: 2px solid #333; padding: 12px; margin-bottom: 30px; border-radius: 8px;
-            display: flex; flex-wrap: wrap; gap: 15px; justify-content: center;
-            font-family: 'Trykkskrift-1'; font-size: 24px;
-        }
-
-/* Sørg for at grid ikke strekker seg */
-.grid-container { 
-    display: grid; 
-    grid-template-columns: repeat(2, 1fr); 
-    gap: 25px 40px; 
-    width: 100%;
-    align-content: start; 
-}
-.word-unit {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    width: 100%;          /* Sørger for at den bruker plassen i kolonnen sin */
-    margin-bottom: 15px;  /* Litt luft ned til neste oppgave */
-    page-break-inside: avoid; /* Tvinger hele oppgaven til å holde seg samlet */
-    break-inside: avoid;
-}
-        
-.image-box { 
-    height: 75px; /* Litt lavere enn før for å gi plass til linjer under */
-    margin-bottom: 10px; 
-    display: flex; 
-    align-items: center; 
-}
-        .image-box img { height: 75px; width: 75px; object-fit: contain; }
-
-        /* SILHUETTER */
-        .shapes-wrapper { display: flex; align-items: flex-end; }
-.box { 
-    position: relative; /* VIKTIG: Dette holder bokstaven på plass inni boksen */
-    width: var(--unit-size); 
-    border: 2.5px solid #000; 
-    margin-left: -2.5px; 
-    background: #fff; 
-    box-sizing: border-box; 
-    display: flex; 
-    justify-content: center; 
-    font-family: 'Trykkskrift-1'; 
-    font-size: 32px;
-}
-        .stue { height: var(--stue-height); align-items: flex-end; }
-        .stue-loft { height: var(--total-height); align-items: flex-end; }
-        .stue-kjeller { 
-            height: var(--total-height); margin-bottom: calc(var(--diff) * -1); 
-            display: flex; flex-direction: column; justify-content: flex-start; align-items: center;
-        }
-        .stue-kjeller::before { content: ""; display: block; min-height: var(--stue-height); margin-bottom: calc(var(--stue-height) * -1); }
-/* FELLES REGEL - Erstatter alle andre ".box span" og ".special-box span" */
-.box span { 
-    position: absolute;
-    bottom: 3px !important; /* Tvinger i, å, n, b osv. ned på samme linje */
-    left: 0;
-    width: 100%;
-    text-align: center;
-    line-height: 1;
-    z-index: 5; /* Høyere enn SVG-en (som har z-index 1) */
-    padding: 0 !important;
-    margin: 0 !important;
-}
-
-/* UNNTAKET: Kjeller-bokstaver må løftes opp så halen henger under */
-.stue-kjeller span { 
-    bottom: 28px !important; 
-}
-
-        /* MODAL */
-        .modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85); z-index: 2000;
-            display: none; justify-content: center; align-items: center; backdrop-filter: blur(4px);
-        }
-.modal-content { 
+    padding: 15px; 
+    margin-top: 20px; 
     background: white; 
-    color: #333; 
-    padding: 15px 25px 25px 25px; /* Mindre padding i toppen (15px) */
-    border-radius: 15px; 
-    width: 95%; 
-    max-width: 800px; 
-    max-height: 85vh; 
-    overflow-y: auto; 
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    position: relative;
+    width: 100%; 
+    box-sizing: border-box; 
+    
+    /* DISSE TO LINJENE LØSER PROBLEMET: */
+    display: block; 
+    min-width: 100%; 
+    max-width: 0; 
 }
 
-/* Fjerner tomrommet over overskriften */
-.modal-content h2 {
-    margin-top: 0;
-    margin-bottom: 1px;
-    font-size: 1.5rem;
+.word-list-box h3 { 
+    margin: 0 0 10px 0; 
+    text-align: center; 
+    border-bottom: 2px solid #333; 
+    padding-bottom: 5px; 
 }
 
-.btn-green { 
-    background: #27ae60; 
-    color: white; 
+.word-list-box ul {  
+    list-style: none; 
+    padding: 0; 
+    margin: 0;
+    display: flex; 
+    flex-wrap: wrap; 
+    justify-content: center; 
+    gap: 10px 20px; 
+}
+
+.word-list-box li { 
+    padding: 2px 0; 
     border: none; 
-    padding: 10px 25px; 
-    border-radius: 6px; 
-    cursor: pointer; 
-    font-weight: bold; 
-    flex: 1; /* Gjør at knappen fyller tilgjengelig plass */
-    max-width: 250px; 
+    white-space: nowrap; /* Sikrer at selve ordet ikke deles, bare lista */
 }
 
-.btn-red { 
-    background: #ff7675; 
-    color: white; 
-    border: none; 
-    padding: 10px 25px; 
-    border-radius: 6px; 
-    cursor: pointer; 
-    font-weight: bold;
-    flex: 1; /* Gjør at knappen fyller tilgjengelig plass */
-    max-width: 250px;
-}
-        .hidden { display: none !important; }
-
-/* Spesialstørrelser for bokstaver */
-.w-v-narrow { width: 22px !important; } 
-.w-narrow { width: 32px !important; } 
-.w-normal { width: var(--unit-size, 30px); }
-
-
-/* SVG-boksene skal ikke ha kantlinje, men bokstaven inni følger samme bunnlinje */
-.special-box { border: none !important; background: transparent !important; }
-.special-box svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
-
-
-/* Justering for i og å */
-.medium-high { height: 45px; } /* Juster høyden så den passer din stil */
-
+    .alt-indicator { display: none; position: absolute; top: 1px; right: 1px; color: var(--alt-match); font-size: 0.5rem; }
+    .show-fasit .alt-indicator { display: block; }
+    .show-fasit .is-alt-start { outline: 2px dashed var(--alt-match); outline-offset: -4px; }
 
 /* Denne manglet for at menyen skal kunne åpnes */
 .dropdown-menu.show {
@@ -324,87 +262,17 @@
     background-color: #34495e;
 }
 
-/* Viser menyen når man legger til klassen "show" via JS */
-.dropdown-menu.show {
-    display: block;
-}
-
-@media print {
-    @page { 
-        size: A4 portrait; 
-        margin: 0; 
-    }    
-
-    html, body, #preview { 
-        background: white !important; 
-        margin: 0 !important; 
-        padding: 0 !important; 
-        width: 100% !important;
-        height: auto !important;
+    @media print {
+        .sidebar { display: none !important; }
+        body, .main-content { background-color: white !important; padding: 0 !important; display: block !important; }
+        #capture-area { box-shadow: none !important; display: inline-flex !important; }
+        * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
     }
-
-    #sidebar, .modal, .btn-green, .btn-red { 
-        display: none !important; 
-    }
-
-    /* Tvinger griden til å fylle opp side 1 før den brekker */
-    .grid-container {
-        display: grid !important;
-        grid-template-columns: repeat(2, 1fr) !important;
-        page-break-inside: auto !important;
-        break-inside: auto !important;
-        gap: 5px 40px !important; /* Litt mindre gap vertikalt */
-    }
-
-    .paper { 
-        margin: 0 !important; 
-        padding-top: 10mm !important; /* Litt mindre padding for å gi plass til linjer */
-        padding-bottom: 10mm !important; 
-        box-shadow: none !important; 
-        border: none !important;
-        height: auto !important;
-        min-height: 0 !important; 
-        page-break-inside: auto; 
-    }
-
-    /* Kompakt ordbank er kritisk når linjer er valgt */
-    #on-page-ordbank {
-        margin-bottom: 5mm !important; /* Redusert for å spare plass */
-        padding: 5px !important;
-        font-size: 20px !important; /* Litt mindre tekst i ordbank sparer høyde */
-    }
-
-    .paper-header {
-        margin-bottom: 5px !important;
-    }
-/* Sørger for at fasit-side og ordbank-side alltid starter på ny side */
-    .paper + .paper, 
-    .fasit-page, 
-    #fasit-content {
-        page-break-before: always !important;
-        margin-top: 0 !important;
-        padding-top: 15mm !important; /* Gir god marg på den nye siden */
-    }
-
-    .word-unit {
-        page-break-inside: avoid !important;
-        break-inside: avoid !important;
-        margin-top: 3mm !important; /* Redusert fra 5mm for å unngå hopp */
-    }
-
-    /* Drar første rad aktivt oppover for å tvinge dem inn på side 1 */
-    .grid-container > .word-unit:nth-child(1),
-    .grid-container > .word-unit:nth-child(2) {
-        margin-top: -2mm !important; 
-    }
-
-    .hidden { display: none !important; }
-}
-
-    </style>
+</style>
 </head>
 <body>
-<div id="sidebar">
+
+<div class="sidebar">
     <div class="sidebar-header" style="display: flex; align-items: center; margin-bottom: 20px;">
         
         <div class="menu-container" style="margin-bottom: 0; margin-right: 15px;">
@@ -413,7 +281,6 @@
                 <span></span>
                 <span></span>
             </div>
-            
     <div id="myDropdown" class="dropdown-menu">
     <a href="https://77tor.github.io/gitter/" target="_self">
         <img src="gitter_02.png" class="menu-icon"> Gitter-ord
@@ -424,561 +291,216 @@
     <a href="https://77tor.github.io/ord-sok/" target="_self">
         <img src="ord-sok.png" class="menu-icon"> Ordsøk
     </a>
+</div>
+        </div>
+
+        <h2 style="margin: 0; flex-grow: 1; text-align: center;">Gitter-generator</h2>
+    </div>
+    <textarea id="wordInput" placeholder="Skriv ord her..."></textarea>
+    <div class="sidebar-controls">
+        <div class="control-item">
+            <span>Marker tomme felt</span>
+            <label class="switch"><input type="checkbox" id="toggleEnds" onchange="updateView()"><span class="slider"></span></label>
+        </div>
+        <div class="control-item">
+            <span>Vokal-farge</span>
+            <label class="switch"><input type="checkbox" id="toggleVowels" onchange="updateView()"><span class="slider"></span></label>
+        </div>
+        <div class="control-item">
+            <span>STORE bokstaver</span>
+            <label class="switch"><input type="checkbox" id="toggleCase" onchange="updateView()"><span class="slider"></span></label>
+        </div>
+        <div class="control-item">
+            <span style="color: #ff7675;">Vis fasit</span>
+            <label class="switch"><input type="checkbox" id="toggleFasit" onchange="updateView()"><span class="slider"></span></label>
+        </div>
+<div style="margin-bottom: 109px;">
+    </div>
+
+
+<div class="btn-group" style="display: flex; gap: 10px; margin-bottom: 10px; align-items: stretch;">
+    <button class="action-btn btn-generate" onclick="generate()" style="flex: 2; white-space: nowrap; margin-bottom: 0;">LAG GITTER</button>
+    <button class="action-btn" onclick="resetForm()" style="flex: 1; white-space: nowrap; background-color: #ff7675; color: white; margin-bottom: 0;">NULLSTILL</button>
+</div>
+
+<div class="btn-row" style="display: flex; gap: 10px;">
+    <button class="action-btn" style="flex: 1; background-color: #2980b9; color: white; margin-bottom: 0;" onclick="window.print()">SKRIV UT</button>
+    <button class="action-btn" style="flex: 1; background-color: #9b59b6; color: white; margin-bottom: 0;" onclick="downloadFullImage()">LAST NED BILDE</button>
+        </div>
+    </div>
+</div>
+
+<div class="main-content">
+    <div id="placeholder-image" style="display: flex; justify-content: center; align-items: center; width: 100%; height: 100%;">
+        <img src="gitter_03.png" alt="Velkomstbilde" style="max-width: 400px; opacity: 0.3; filter: grayscale(100%);">
+    </div>
+
+    <div id="capture-area" style="display: none;">
+        <div class="table-container">
+            <div id="numberColumn" class="row-numbers"></div>
+            <div style="display: table;">
+                <div id="gridOutput"></div>
+                <div id="wordListOutput"></div>
             </div>
         </div>
-<h3 style="margin: 0; flex-grow: 1; text-align: center;">SILHUETT-ORD</h3>
-    </div>
-
-    <button class="nav-btn" onclick="openModal('modal-enkel-tekst')">1. ENKEL TEKST<br><small>Egne ord, ingen bilder</small></button>
-    <button class="nav-btn" onclick="openModal('modal-enkel-auto')">2. ENKEL BILDER<br><small>Auto-generert fra liste</small></button>
-    <button class="nav-btn" onclick="openModal('modal-avansert')">3. AVANSERT<br><small>Egne bilder & utvalg</small></button>
-
-    <div class="sidebar-section">
-        <div class="toggle-container">
-            <span>Vis ordbank</span>
-            <label class="switch">
-                <input type="checkbox" id="global-ordbank-page" onchange="updateVisibility()">
-                <span class="slider"></span>
-            </label>
-        </div>
-        <div class="toggle-container">
-            <span>Vis ordbank på egen side</span>
-            <label class="switch">
-                <input type="checkbox" id="global-ordbank-sheet" onchange="updateVisibility()">
-                <span class="slider"></span>
-            </label>
-        </div>
-        <div class="toggle-container">
-            <span>Vis fasit-side</span>
-            <label class="switch">
-                <input type="checkbox" id="global-fasit" onchange="updateVisibility()">
-                <span class="slider"></span>
-            </label>
-        </div>
-        <div class="toggle-container">
-            <span>Legg til skrivelinjer</span>
-            <label class="switch">
-                <input type="checkbox" id="global-lines" onchange="updateVisibility()">
-                <span class="slider"></span>
-            </label>
-        </div>
-<div class="toggle-container">
-    <span>Tilpassede silhuetter</span>
-    <label class="switch">
-        <input type="checkbox" id="custom-silhouettes" onchange="renderAll()">
-        <span class="slider"></span>
-    </label>
-</div>
-    </div>
-
-<div style="margin-top: 20px; display: flex; gap: 10px; width: 100%; max-width: 510px;">
-    <button class="btn-green" onclick="window.print()">SKRIV UT (PDF)</button>
-    <button class="btn-red" onclick="location.reload()">NULLSTILL</button>
-</div>
-</div>
-
-
-<div id="modal-enkel-tekst" class="modal">
-    <div class="modal-content">
-        <h2>Skriv egne ord</h2>
-        
-        <div style="background: #f9f9f9; padding: 10px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #ddd;">
-            <label><strong>Med skrivelinjer (maks 8 ord):</strong></label>
-            <textarea id="input-med-linjer" placeholder="is, sol, ape..." rows="3" 
-                style="width:100%; padding:10px; margin-top:5px;" 
-                oninput="document.getElementById('input-uten-linjer').value=''"></textarea>
-        </div>
-
-        <div style="background: #f9f9f9; padding: 10px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #ddd;">
-            <label><strong>Uten skrivelinjer (maks 12 ord):</strong></label>
-            <textarea id="input-uten-linjer" placeholder="is, sol, ape, kake, hus, bok..." rows="4" 
-                style="width:100%; padding:10px; margin-top:5px;" 
-                oninput="document.getElementById('input-med-linjer').value=''"></textarea>
-        </div>
-
-        <button class="btn-green" onclick="generer('tekst')">GENERER</button>
-        <button class="btn-red" onclick="closeModals()">AVBRYT</button>
-    </div>
-</div>
-
-<div id="modal-enkel-auto" class="modal">
-    <div class="modal-content">
-        <h2>Auto-generer med bilder</h2>
-        
-        <label>Velg lengde på ordene:</label>
-        <select id="auto-length" style="width:100%; padding:10px; margin-bottom:15px;">
-            <option value="2-7">Blandet (2-7 bokstaver)</option>
-            <option value="2">Kun 2 bokstaver (f.eks. is, do)</option>
-            <option value="3">Kun 3 bokstaver (f.eks. sol, tog)</option>
-            <option value="4">Kun 4 bokstaver (f.eks. løve, kake)</option>
-        </select>
-
-        <label>Antall bilder per ark:</label>
-        <select id="auto-count" style="width:100%; padding:10px; margin-bottom:15px;">
-            <option value="6">6 ord (anbefalt med skrivelinjer)</option>
-            <option value="10">10 ord (kun silhuetter, ikke plass til linjer)</option>
-        </select>
-        
-        <div style="display: flex; gap: 10px; margin-top: 10px;">
-            <button class="btn-green" onclick="generer('auto')">GENERER</button>
-            <button class="btn-red" onclick="closeModals()">AVBRYT</button>
-        </div>
-    </div>
-</div>
-
-<div id="modal-avansert" class="modal">
-    <div class="modal-content" style="max-width: 800px; padding: 15px 25px; max-height: 90vh; display: flex; flex-direction: column;">
-        <h2 style="margin-top: 0; margin-bottom: 10px;">Avansert utvalg</h2>
-        
-        <div style="background: #f8f9fa; padding: 12px; border-radius: 8px; margin-bottom: 10px; border: 1px dashed #ccc; flex-shrink: 0;">
-            <p style="margin: 0 0 8px 0; font-weight: bold; font-size: 0.9rem;">Legg til eget ord med bilde fra PC:</p>
-            <div style="display: flex; gap: 10px;">
-                <input type="text" id="custom-word-input" placeholder="Skriv ordet her..." style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                <input type="file" id="custom-image-input" accept="image/*" style="display: none;">
-                <button class="btn-green" style="width: auto; margin: 0; padding: 8px 15px;" onclick="document.getElementById('custom-image-input').click()">VELG BILDE</button>
-            </div>
-            <small id="file-name-display" style="display: block; margin-top: 5px; color: #666;"></small>
-        </div>
-
-        <div id="avansert-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 10px; flex-grow: 1; overflow-y: auto; border: 1px solid #eee; padding: 10px; margin-bottom: 15px; min-height: 200px; max-height: 40vh;">
-        </div>
-
-<div id="advanced-page-counter" style="margin: 10px 0; padding: 8px 12px; background: #2c3e50; color: white; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 0.85em; border: 1px solid #34495e; gap: 15px;">
-    <div>Valgte: <strong id="count-total">0</strong></div>
-    <div id="est-uten">📄 Uten linjer: <span id="val-uten" style="font-weight: bold;">1 side</span></div>
-    <div id="est-med">📝 Med linjer: <span id="val-med" style="font-weight: bold;">1 side</span></div>
-</div>
-        <div style="display: flex; flex-direction: row; gap: 10px; justify-content: center; flex-shrink: 0; padding-top: 5px;">
-            <button class="btn-green" style="flex: 1; margin: 0;" onclick="generer('avansert')">GENERER VALGTE</button>
-            <button class="btn-red" style="flex: 1; margin: 0; background:#7f8c8d;" onclick="nullstillAvansertValg()">NULLSTILL VALG</button>
-            <button class="btn-red" style="flex: 1; margin: 0;" onclick="closeModals()">AVBRYT</button>
-        </div>
-    </div>
-</div>
-
-<div id="preview">
-    <div id="placeholder-image" style="display: flex; justify-content: center; align-items: center; width: 100%; height: 80vh;">
-        <img src="silhuett-ord_03.png" alt="Velkomst" style="max-width: 400px; opacity: 0.15; filter: grayscale(100%);">
-    </div>
-
-    <div class="paper hidden" id="paper-main">
-        <div class="paper-header" style="display: block; border-bottom: 3px solid #333; padding-bottom: 10px; margin-bottom: 20px;">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <h1 style="margin:0; font-size:28px;">SILHUETT-ORD</h1>
-                <div style="font-size: 18px; font-weight: bold;">Navn: _________________________________</div>
-            </div>
-            <p id="task-desc" style="margin: 2px 0 0 0; font-style: italic; font-size: 16px; color: #444; width: 100%;">
-                Oppgave her...
-            </p>
-        </div>
-        <div id="on-page-ordbank" class="hidden"></div>
-        <div id="output" class="grid-container"></div>
-    </div>
-
-    <div class="paper hidden" id="paper-ordbank-sheet">
-        <div class="paper-header"><h1>Ordbank</h1></div>
-        <div id="ordbank-sheet-output" style="display:flex; flex-wrap:wrap; gap:20px; font-family:'Trykkskrift-1'; font-size:30px; padding:20px; border:2px solid #eee;"></div>
-    </div>
-
-    <div class="paper hidden" id="paper-fasit">
-        <div class="paper-header"><h1>Fasit</h1></div>
-        <div id="fasit-output" class="grid-container"></div>
     </div>
 </div>
 
 <script>
-let selectedAdvancedWords = []; // Midlertidig liste for avansert utvalg
-// Database - Legg til dine egne symboler her
-const substantivDb = [
-    {ord: "agurk", symbol: "🥒"}, {ord: "alv", symbol: "🧝"}, {ord: "and", symbol: "🦆"}, {ord: "anker", symbol: "⚓"}, {ord: "ape", symbol: "🐒"},
-{ord: "appelsin", symbol: "🍊"}, {ord: "arm", symbol: "💪"}, {ord: "avis", symbol: "📰"}, {ord: "bad", symbol: "🛀"}, {ord: "ball", symbol: "⚽"},
-{ord: "ballong", symbol: "🎈"}, {ord: "bamse", symbol: "🧸"}, {ord: "banan", symbol: "🍌"}, {ord: "benk", symbol: "🪑"},
-{ord: "bie", symbol: "🐝"}, {ord: "bilde", symbol: "🖼️"}, {ord: "bil", symbol: "🚗"}, {ord: "bille", symbol: "🐞"},
-{ord: "bjelle", symbol: "🔔"}, {ord: "bjørn", symbol: "🐻"}, {ord: "blad", symbol: "🍃"}, {ord: "blomst", symbol: "🌻"}, {ord: "bløtkake", symbol: "🎂"},
-{ord: "blyant", symbol: "✏️"}, {ord: "blølge", symbol: "🌊"}, {ord: "bok", symbol: "📖"}, {ord: "bolle", symbol: "🥣"}, {ord: "bonde", symbol: "👨‍🌾"},
-{ord: "borg", symbol: "🏰"}, {ord: "brev", symbol: "✉️"}, {ord: "brille", symbol: "👓"}, {ord: "bro", symbol: "🌉"}, {ord: "brokkoli", symbol: "🥦"},
-{ord: "brus", symbol: "🥤"}, {ord: "brød", symbol: "🍞"}, {ord: "bue", symbol: "🏹"}, {ord: "bukse", symbol: "👖"}, {ord: "buss", symbol: "🚌"},
-{ord: "by", symbol: "🏙️"}, {ord: "bål", symbol: "🔥"}, {ord: "båt", symbol: "⛵"}, {ord: "bær", symbol: "🍓"}, {ord: "bøtte", symbol: "🪣"},
-{ord: "datamaskin", symbol: "💻"}, {ord: "diamant", symbol: "💎"}, {ord: "dinosaur", symbol: "🦖"}, {ord: "do", symbol: "🚽"}, {ord: "dolk", symbol: "🗡️"},
-{ord: "dopapir", symbol: "🧻"}, {ord: "drage", symbol: "🐉"}, {ord: "dråpe", symbol: "💧"}, {ord: "due", symbol: "🕊️"}, {ord: "dusj", symbol: "🚿"},
-{ord: "dør", symbol: "🚪"}, {ord: "ederkopp", symbol: "🕷️"}, {ord: "egg", symbol: "🥚"}, {ord: "ekorn", symbol: "🐿️"}, {ord: "elefant", symbol: "🐘"},
-{ord: "engel", symbol: "😇"}, {ord: "eple", symbol: "🍎"}, {ord: "fisk", symbol: "🐟"}, {ord: "fiske", symbol: "🎣"}, {ord: "fjell", symbol: "🏔️"},
-{ord: "flagg", symbol: "🚩"}, {ord: "flaske", symbol: "🍼"}, {ord: "fly", symbol: "✈️"}, {ord: "fot", symbol: "🦶"}, {ord: "frosk", symbol: "🐸"},
-{ord: "fugl", symbol: "🐦"}, {ord: "gaffel", symbol: "🍴"}, {ord: "garn", symbol: "🧶"}, {ord: "gave", symbol: "🎁"}, {ord: "geit", symbol: "🐐"},
-{ord: "giraff", symbol: "🦒"}, {ord: "gitar", symbol: "🎸"}, {ord: "glass", symbol: "🥛"}, {ord: "gris", symbol: "🐷"}, {ord: "gulrot", symbol: "🥕"},
-{ord: "gå", symbol: "🚶"}, {ord: "hai", symbol: "🦈"}, {ord: "hals", symbol: "🧣"}, {ord: "hammer", symbol: "🔨"}, {ord: "hanske", symbol: "🧤"},
-{ord: "hatt", symbol: "🎩"}, {ord: "heks", symbol: "🧙‍♀️"}, {ord: "hest", symbol: "🐎"}, {ord: "hjelm", symbol: "🪖"}, {ord: "hjerne", symbol: "🧠"},
-{ord: "hjerte", symbol: "❤️"}, {ord: "hjul", symbol: "🛞"}, {ord: "hull", symbol: "🕳️"}, {ord: "hund", symbol: "🐕"}, {ord: "hus", symbol: "🏠"},
-{ord: "hval", symbol: "🐋"}, {ord: "hånd", symbol: "✋"}, {ord: "ild", symbol: "🔥"}, {ord: "is", symbol: "🍦"}, {ord: "isbit", symbol: "🧊"},
-{ord: "jakke", symbol: "🧥"}, {ord: "jordbær", symbol: "🍓"}, {ord: "jus", symbol: "🧃"}, {ord: "kake", symbol: "🍰"}, {ord: "kanin", symbol: "🐰"},
-{ord: "kart", symbol: "🗺️"}, {ord: "katt", symbol: "🐈"}, {ord: "kjeks", symbol: "🍪"}, {ord: "kjelke", symbol: "🛷"}, {ord: "kino", symbol: "🎬"},
-{ord: "kiste", symbol: "⚰️"}, {ord: "kjole", symbol: "👗"}, {ord: "kjøtt", symbol: "🥩"}, {ord: "klokke", symbol: "⏰"}, {ord: "klovn", symbol: "🤡"},
-{ord: "kne", symbol: "🦵"}, {ord: "kniv", symbol: "🔪"}, {ord: "konge", symbol: "🤴"}, {ord: "kopp", symbol: "☕"}, {ord: "korn", symbol: "🌾"},
-{ord: "kost", symbol: "🧹"}, {ord: "krabbe", symbol: "🦀"}, {ord: "kran", symbol: "🏗️"}, {ord: "krok", symbol: "🪝"}, {ord: "krone", symbol: "👑"},
-{ord: "kubbe", symbol: "🪵"}, {ord: "ku", symbol: "🐄"}, {ord: "kurv", symbol: "🧺"}, {ord: "lampe", symbol: "💡"}, {ord: "lasbil", symbol: "🚛"},
-{ord: "linjal", symbol: "📏"}, {ord: "lue", symbol: "🧢"}, {ord: "lus", symbol: "🪳"}, {ord: "lys", symbol: "🕯️"},
-{ord: "løpe", symbol: "🏃"}, {ord: "løv", symbol: "🍃"}, {ord: "løve", symbol: "🦁"}, {ord: "maske", symbol: "🎭"}, {ord: "mat", symbol: "🍱"},
-{ord: "maur", symbol: "Ant"}, {ord: "melk", symbol: "🥛"}, {ord: "munn", symbol: "👄"}, {ord: "mur", symbol: "🧱"}, {ord: "mus", symbol: "🐭"},
-{ord: "musikk", symbol: "🎵"}, {ord: "måne", symbol: "🌙"}, {ord: "natt", symbol: "🌃"}, {ord: "nese", symbol: "👃"}, {ord: "nål", symbol: "🪡"},
-{ord: "nøkkel", symbol: "🔑"}, {ord: "nøtt", symbol: "🥜"}, {ord: "orm", symbol: "🐍"}, {ord: "ost", symbol: "🧀"}, {ord: "øy", symbol: "🏝️"},
-{ord: "øye", symbol: "👁️"}, {ord: "padde", symbol: "🐸"}, {ord: "pakke", symbol: "📦"}, {ord: "panda", symbol: "🐼"}, {ord: "papegøye", symbol: "🦜"},
-{ord: "paraply", symbol: "☂️"}, {ord: "penger", symbol: "💰"}, {ord: "pensel", symbol: "🖌️"}, {ord: "pil", symbol: "🏹"}, {ord: "pizza", symbol: "🍕"},
-{ord: "plante", symbol: "🌱"}, {ord: "plaster", symbol: "🩹"}, {ord: "pokal", symbol: "🏆"}, {ord: "postkasse", symbol: "📮"}, {ord: "pølse", symbol: "🌭"},
-{ord: "pære", symbol: "🍐"}, {ord: "racerbil", symbol: "🏎️"}, {ord: "radio", symbol: "📻"}, {ord: "regn", symbol: "🌧️"}, {ord: "regnbue", symbol: "🌈"},
-{ord: "reke", symbol: "🦐"}, {ord: "ri", symbol: "🏇"}, {ord: "ring", symbol: "💍"}, {ord: "ris", symbol: "🍚"}, {ord: "robot", symbol: "🤖"},
-{ord: "robåt", symbol: "🛶"}, {ord: "rose", symbol: "🌹"}, {ord: "rotte", symbol: "🐀"}, {ord: "saks", symbol: "✂️"}, {ord: "sau", symbol: "🐑"},
-{ord: "sebra", symbol: "🦓"}, {ord: "seilbåt", symbol: "⛵"}, {ord: "sekk", symbol: "🎒"}, {ord: "seng", symbol: "🛌"}, {ord: "sirkus", symbol: "🎪"},
-{ord: "ski", symbol: "🎿"}, {ord: "skje", symbol: "🥄"}, {ord: "skjell", symbol: "🐚"}, {ord: "skjerf", symbol: "🧣"}, {ord: "skip", symbol: "🛳️"},
-{ord: "skjorte", symbol: "👕"}, {ord: "sko", symbol: "👟"}, {ord: "skole", symbol: "🏫"}, {ord: "sky", symbol: "☁️"}, {ord: "slange", symbol: "🐍"},
-{ord: "slott", symbol: "🏰"}, {ord: "sludd", symbol: "🌨️"}, {ord: "sløyfe", symbol: "🎀"}, {ord: "snelle", symbol: "🧵"}, {ord: "snø", symbol: "❄️"},
-{ord: "snømann", symbol: "☃️"}, {ord: "sokker", symbol: "🧦"}, {ord: "sol", symbol: "☀️"}, {ord: "sopp", symbol: "🍄"}, {ord: "speil", symbol: "🪞"},
-{ord: "spor", symbol: "🐾"}, {ord: "spøkelse", symbol: "👻"}, {ord: "stav", symbol: "🦯"}, {ord: "stein", symbol: "🪨"}, {ord: "stige", symbol: "🪜"},
-{ord: "stjerne", symbol: "⭐"}, {ord: "stol", symbol: "🪑"}, {ord: "strand", symbol: "🏖️"}, {ord: "sverd", symbol: "⚔️"}, {ord: "svømme", symbol: "🏊"},
-{ord: "sykkel", symbol: "🚲"}, {ord: "såpe", symbol: "🧼"}, {ord: "tallerken", symbol: "🍽️"}, {ord: "tann", symbol: "🦷"}, {ord: "telt", symbol: "⛺"},
-{ord: "terning", symbol: "🎲"}, {ord: "tog", symbol: "🚆"}, {ord: "tomat", symbol: "🍅"}, {ord: "traktor", symbol: "🚜"}, {ord: "tralle", symbol: "🛒"},
-{ord: "tre", symbol: "🌳"}, {ord: "tromme", symbol: "🥁"}, {ord: "tv", symbol: "📺"}, {ord: "tå", symbol: "🦶"}, {ord: "tønne", symbol: "🛢️"},
-{ord: "ulv", symbol: "🐺"}, {ord: "vann", symbol: "💧"}, {ord: "vekt", symbol: "⚖️"}, {ord: "vest", symbol: "🦺"}, {ord: "vogn", symbol: "🛒"},
-{ord: "øks", symbol: "🪓"}, {ord: "øre", symbol: "👂"}, {ord: "ørn", symbol: "🦅"}
-];
+    const vokaler = "aeiouyæøå";
 
-let activeWords = [];
-let mode = 'bilder';
-
-// Denne skal nå KUN åpne og tegne, ikke tømme listen
-function openModal(id) { 
-    document.getElementById(id).style.display = 'flex'; 
-    if(id === 'modal-avansert') {
-        renderAvansert(); 
-        oppdaterSideEstimat(); // Oppdaterer tallene med en gang modalen åpnes
-    }
-}
-
-
-
-// Håndterer filvalg og visning av filnavn
-document.getElementById('custom-image-input')?.addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    const word = document.getElementById('custom-word-input').value.trim();
-    const nameDisplay = document.getElementById('file-name-display');
-
-    if (!file) return;
-    if (!word) {
-        alert("Skriv inn ordet før du velger bilde!");
-        e.target.value = ''; // Nullstill filfeltet
-        return;
+    function updateView() {
+        const body = document.body;
+        if (!document.getElementById('toggleEnds').checked) body.classList.add('hide-ends-active');
+        else body.classList.remove('hide-ends-active');
+        if (document.getElementById('toggleVowels').checked) body.classList.add('show-vowel-bg');
+        else body.classList.remove('show-vowel-bg');
+        if (document.getElementById('toggleFasit').checked) body.classList.add('show-fasit');
+        else body.classList.remove('show-fasit');
+        if (document.getElementById('toggleCase').checked) body.classList.add('uppercase-mode');
+        else body.classList.remove('uppercase-mode');
     }
 
-    const reader = new FileReader();
-    reader.onload = function(event) {
-        // Lag et nytt "objekt" som ligner på de i databasen
-        const newEntry = {
-            ord: word.toLowerCase(),
-            symbol: event.target.result, // Dette er selve bilde-dataen
-            isCustom: true // Markør så vi vet det ikke er en Twemoji
-        };
-
-        // Legg det øverst i databasen så det er lett å finne
-        substantivDb.unshift(newEntry);
-        
-        // Marker det som valgt med en gang
-        selectedAdvancedWords.push(newEntry);
-
-        // Nullstill input-feltene
-        document.getElementById('custom-word-input').value = '';
-        nameDisplay.innerText = "";
-        
-        // Oppdater rutenettet
-        renderAvansert();
-        oppdaterSideEstimat(); // <--- LEGG TIL DENNE HER
-    };
-    reader.readAsDataURL(file);
-});
-
-
-function getBoxInfo(c) {
-    c = c.toLowerCase();
-    let shape = "stue", svg = "", extraClass = "", width = "w-normal";
-    
-    if ("bdfhklt".includes(c)) {
-        shape = "stue-loft";
-    } else if (c === 'i' || c === 'å') {
-        shape = "medium-high"; // Bruker mellomhøyden fra din CSS
-    } else if ("gjpqy".includes(c)) {
-        shape = "stue-kjeller";
+    function resetForm() {
+        if(!confirm("Nullstille alt?")) return;
+        document.getElementById('wordInput').value = "";
+        document.getElementById('gridOutput').innerHTML = "";
+        document.getElementById('numberColumn').innerHTML = "";
+        document.getElementById('wordListOutput').innerHTML = "";
+        document.getElementById('placeholder-image').style.display = 'flex';
+        document.getElementById('capture-area').style.display = 'none';
+        document.querySelectorAll('input[type=checkbox]').forEach(el => el.checked = false);
+        updateView();
     }
 
-    // SVG-stier med tallet 30 (som vi ble enige om)
-    if ("bhk".includes(c)) {
-        extraClass = "special-box";
-        svg = `<svg viewBox="0 0 45 72" preserveAspectRatio="none"><path d="M1,1 L25,1 L25,30 L44,30 L44,71 L1,71 Z" fill="white" stroke="black" stroke-width="2"/></svg>`;
-    } else if (c === 'd') {
-        extraClass = "special-box";
-        svg = `<svg viewBox="0 0 45 72" preserveAspectRatio="none"><path d="M20,1 L44,1 L44,71 L1,71 L1,30 L20,30 Z" fill="white" stroke="black" stroke-width="2"/></svg>`;
-    } else if (c === 'p') {
-        extraClass = "special-box";
-        svg = `<svg viewBox="0 0 45 72" preserveAspectRatio="none"><path d="M1,1 L44,1 L44,42 L25,42 L25,71 L1,71 Z" fill="white" stroke="black" stroke-width="2"/></svg>`;
+    function getPattern(word) {
+        return word.toLowerCase().split('').map(c => vokaler.includes(c) ? 'V' : 'K');
     }
 
-    // Bredder
-    if (c === 'i' || c === 'l') width = "w-v-narrow";
-    else if ("fjtå".includes(c)) width = "w-narrow"; 
-
-    return { class: `${shape} ${width} ${extraClass}`, svg: svg };
-}
-// Ny funksjon for å tømme utvalget manuelt inne i modalen
-function nullstillAvansertValg() {
-    // 1. Tøm listen over valgte ord
-    selectedAdvancedWords = [];
-    
-    // 2. Tegn rutenettet på nytt (slik at blå rammer forsvinner)
-    renderAvansert();
-    
-    // 3. Oppdater telleren og estimatene (slik at de nullstilles)
-    oppdaterSideEstimat();
-}
-
-function closeModals() { 
-    document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); 
-}
-
-
-// OPPDATERT HYBRID BILDE-FUNKSJON
-function getTwemojiUrl(item) {
-    // 1. Sjekk om dette er et eget opplastet bilde (fra PC)
-    if (item && typeof item === 'object' && item.isCustom) {
-        return item.symbol; 
-    }
-    
-    // 2. Finn ut hva symbolet er
-    const symbol = typeof item === 'string' ? item : (item ? item.symbol : "");
-    if (!symbol) return ""; 
-
-    // --- NYTT: Spesialfiks for Ur og Ugle ---
-    // Vi sjekker om symbolet inneholder ugle eller ur og returnerer riktig Twemoji-adresse direkte
-    if (symbol.includes("🦉")) return "https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f989.svg";
-    if (symbol.includes("⌚")) return "https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/231a.svg";
-    // ----------------------------------------
-
-    // 3. Vanlig Twemoji-logikk for resten
-    const charCode = Array.from(symbol).map(c => c.codePointAt(0).toString(16)).filter(code => code !== "fe0f").join('-');
-    return `https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/${charCode}.svg`;
-}
-
-
-function renderAvansert() {
-    const grid = document.getElementById('avansert-grid');
-    grid.innerHTML = "";
-    
-    substantivDb.forEach(item => {
-        const isSelected = selectedAdvancedWords.some(w => w.ord === item.ord);
-        const div = document.createElement('div');
-        
-        div.style.cssText = `
-            border: ${isSelected ? '3px solid #3498db' : '1px solid #eee'}; 
-            background: ${isSelected ? '#ebf5fb' : 'white'};
-            padding: 5px; cursor: pointer; text-align: center; border-radius: 8px; transition: all 0.2s;
-        `;
-        
-        div.innerHTML = `<img src="${getTwemojiUrl(item)}" style="width:30px; height:30px; object-fit:contain;"><br><small>${item.ord}</small>`;
-        
-        div.onclick = () => {
-            const index = selectedAdvancedWords.findIndex(w => w.ord === item.ord);
-            if (index > -1) {
-                selectedAdvancedWords.splice(index, 1); 
-            } else {
-                selectedAdvancedWords.push(item); 
+    function buildMaster(wordData) {
+        let master = [...wordData[0].pattern];
+        let placements = [{ start: 0, length: wordData[0].pattern.length }];
+        for (let i = 1; i < wordData.length; i++) {
+            let p = wordData[i].pattern;
+            let minNewLength = Infinity;
+            let finalShift = 0;
+            for (let s = -p.length; s <= master.length; s++) {
+                let possibleMatch = true;
+                for (let j = 0; j < p.length; j++) {
+                    let mIdx = s + j;
+                    if (mIdx >= 0 && mIdx < master.length) {
+                        if (master[mIdx] !== p[j]) { possibleMatch = false; break; }
+                    }
+                }
+                if (possibleMatch) {
+                    let currentStart = Math.min(0, s);
+                    let currentEnd = Math.max(master.length, s + p.length);
+                    let totalLen = currentEnd - currentStart;
+                    if (totalLen < minNewLength) { minNewLength = totalLen; finalShift = s; }
+                }
             }
-            renderAvansert(); 
-            oppdaterSideEstimat(); // <--- LEGG TIL DENNE HER
-        };
-        grid.appendChild(div);
-    });
-}
-
-function generer(type) {
-    // 1. Skjul logoen og vis arket
-    const placeholder = document.getElementById('placeholder-image');
-    if (placeholder) placeholder.style.display = 'none';
-    document.getElementById('paper-main').classList.remove('hidden');
-
-    const withLines = document.getElementById('global-lines').checked;
-    
-    // Vi deklarerer disse her én gang
-    let rawText = "";
-    let limit = 16;
-    let autoLineSetting = false; 
-
-    if(type === 'tekst') {
-        mode = 'tekst';
-        const inputMed = document.getElementById('input-med-linjer').value.trim();
-        const inputUten = document.getElementById('input-uten-linjer').value.trim();
-        
-        if (inputMed.length > 0) {
-            rawText = inputMed;
-            limit = 8;
-            autoLineSetting = true;
-        } else if (inputUten.length > 0) {
-            rawText = inputUten;
-            limit = 12;
-            autoLineSetting = false;
-        } else {
-            alert("Vennligst skriv inn noen ord.");
-            return;
+            let newMaster = [];
+            let offset = finalShift < 0 ? Math.abs(finalShift) : 0;
+            if (finalShift < 0) {
+                placements.forEach(pl => pl.start += offset);
+                for(let k=0; k<offset; k++) newMaster.push(p[k]);
+                master.forEach(m => newMaster.push(m));
+                finalShift = 0;
+            } else { newMaster = [...master]; }
+            for (let j = 0; j < p.length; j++) newMaster[finalShift + j] = p[j];
+            master = newMaster;
+            placements.push({ start: finalShift, length: p.length });
         }
-
-        let rawWords = rawText.split(',')
-            .map(w => ({ord: w.trim()}))
-            .filter(w => w.ord.length > 0);
-
-        if(rawWords.length > limit) {
-            alert(`For mange ord! Du har skrevet ${rawWords.length}. Maksgrense her er ${limit} ord.`);
-            return;
-        }
-
-        document.getElementById('global-lines').checked = autoLineSetting;
-        document.getElementById('global-ordbank-page').checked = true;
-        activeWords = rawWords;
-
-    } else if(type === 'auto') {
-        mode = 'bilder';
-        const lengthVal = document.getElementById('auto-length').value;
-        const countVal = parseInt(document.getElementById('auto-count').value); 
-        
-        // --- FIKSEN ER HER: Fjernet "const" for å unngå kollisjon ---
-        autoLineSetting = (countVal === 6);
-        document.getElementById('global-lines').checked = autoLineSetting;
-        
-        let filteredDb = [...substantivDb];
-        
-        if (lengthVal === "2") {
-            filteredDb = substantivDb.filter(item => item.ord.length === 2);
-        } else if (lengthVal === "3") {
-            filteredDb = substantivDb.filter(item => item.ord.length === 3);
-        } else if (lengthVal === "4") {
-            filteredDb = substantivDb.filter(item => item.ord.length === 4);
-        } else if (lengthVal === "2-7") {
-            filteredDb = substantivDb.filter(item => item.ord.length >= 2 && item.ord.length <= 7);
-        }
-
-        if (filteredDb.length < countVal) {
-            alert(`Fant ikke nok ord (${filteredDb.length}) med denne lengden i databasen.`);
-        }
-
-        activeWords = filteredDb.sort(() => 0.5 - Math.random()).slice(0, countVal);
-
-    } else if(type === 'avansert') {
-        if (selectedAdvancedWords.length === 0) {
-            alert("Vennligst velg minst ett bilde først.");
-            return;
-        }
-        mode = 'bilder';
-        activeWords = [...selectedAdvancedWords];
-    }
-    
-    let beskrivelse = mode === 'tekst' ? "Hvilke ord passer i boksene?" : "Skriv ordene det er bilde av.";
-    
-    // Bruker den oppdaterte sjekkboksen for å bygge beskrivelsen
-    if (document.getElementById('global-lines').checked) {
-        beskrivelse += " Skriv ordene også riktig inn i linjesystemene.";
+        return { master, placements };
     }
 
-    document.getElementById('task-desc').innerText = beskrivelse;
-    
-    renderAll();
-    closeModals();
-}
+    function generate() {
+        const input = document.getElementById('wordInput').value.trim();
+        if (input.length === 0) return;
 
-function renderAll() {
-    const out = document.getElementById('output');
-    const fas = document.getElementById('fasit-output');
-    const bankPage = document.getElementById('on-page-ordbank');
-    const bankSheet = document.getElementById('ordbank-sheet-output');
-    
-    out.innerHTML = ""; fas.innerHTML = ""; bankPage.innerHTML = ""; bankSheet.innerHTML = "";
-    
-    activeWords.forEach(item => {
-        out.innerHTML += createWordHtml(item, false);
-        fas.innerHTML += createWordHtml(item, true);
-        const wordSpan = `<span>${item.ord}</span>`; 
-        bankPage.innerHTML += wordSpan;
-        bankSheet.innerHTML += wordSpan;
-    });
-    updateVisibility();
-}
+        document.getElementById('placeholder-image').style.display = 'none';
+        document.getElementById('capture-area').style.display = 'inline-flex';
 
+        const rawWords = input.split(/[\s,]+/).map(w => w.trim()).filter(w => w !== "");
+        if (rawWords.length === 0) return;
 
-function oppdaterSideEstimat() {
-    const totaltValgte = (typeof selectedAdvancedWords !== 'undefined') ? selectedAdvancedWords.length : 0;
-    
-    const countElem = document.getElementById('count-total');
-    const valUtenElem = document.getElementById('val-uten');
-    const valMedElem = document.getElementById('val-med');
+        let wordData = rawWords.map(w => ({ word: w, pattern: getPattern(w) }));
+        wordData.sort((a, b) => b.word.length - a.word.length);
 
-    if (!countElem || !valUtenElem || !valMedElem) return;
+        const result = buildMaster(wordData);
+        const masterPattern = result.master;
+        const maxLength = masterPattern.length;
 
-    // Oppdater antall
-    countElem.innerText = totaltValgte;
+        const numCol = document.getElementById('numberColumn');
+        numCol.innerHTML = wordData.map((_, i) => `<div class="num-item">${i + 1}.</div>`).join('');
 
-    // Beregn sider uten skrivelinjer (10 per side)
-    const siderUten = Math.ceil(totaltValgte / 10) || 1;
-    valUtenElem.innerText = `${siderUten} side${siderUten > 1 ? 'r' : ''}`;
+        let table = document.createElement('table');
+        let headerRow = document.createElement('tr');
+        headerRow.className = "header-row";
+        masterPattern.forEach(char => {
+            let td = document.createElement('td');
+            if (char === 'V') td.classList.add('is-vowel-cell');
+            td.innerHTML = `<span class="${char === 'V' ? 'v-text' : 'k-text'}">${char}</span>`;
+            headerRow.appendChild(td);
+        });
+        table.appendChild(headerRow);
 
-    // Beregn sider med skrivelinjer (6 per side)
-    const siderMed = Math.ceil(totaltValgte / 6) || 1;
-    valMedElem.innerText = `${siderMed} side${siderMed > 1 ? 'r' : ''}`;
+        wordData.forEach((data, idx) => {
+            let row = document.createElement('tr');
+            let letters = data.word.split('');
+            let pos = result.placements[idx];
+            let altStarts = [];
+            for (let s = 0; s <= maxLength - data.pattern.length; s++) {
+                let match = true;
+                for (let j = 0; j < data.pattern.length; j++) {
+                    if (masterPattern[s+j] !== data.pattern[j]) { match = false; break; }
+                }
+                if (match && s !== pos.start) altStarts.push(s);
+            }
+            for (let i = 0; i < maxLength; i++) {
+                let td = document.createElement('td');
+                if (masterPattern[i] === 'V') td.classList.add('is-vowel-cell');
+                if (i >= pos.start && i < pos.start + pos.length) {
+                    td.innerHTML = `<span class="cell-content">${letters[i - pos.start]}</span>`;
+                } else { td.classList.add('inactive'); }
+                if (altStarts.includes(i)) {
+                    td.classList.add('is-alt-start');
+                    td.innerHTML += `<span class="alt-indicator">ALT</span>`;
+                }
+                row.appendChild(td);
+            }
+            table.appendChild(row);
+        });
 
-    // Fargekode for å markere at det bikker over til flere sider
-    valMedElem.style.color = siderMed > 1 ? '#ffcc00' : '#ffffff';
-    valUtenElem.style.color = siderUten > 1 ? '#ffcc00' : '#ffffff';
-}
-
-function createWordHtml(item, isFasit) {
-    const useCustom = document.getElementById('custom-silhouettes').checked;
-    let imgHtml = mode === 'bilder' ? `<div class="image-box"><img src="${getTwemojiUrl(item)}"></div>` : "";
-    
-    const boxes = item.ord.split('').map(c => {
-        if (useCustom) {
-            // Bruk den avanserte logikken
-            const info = getBoxInfo(c);
-            return `<div class="box ${info.class}">${info.svg}<span>${isFasit ? c : ''}</span></div>`;
-        } else {
-            // Bruk den enkle standard-logikken (din nåværende)
-            const cls = "bdfhklt".includes(c.toLowerCase()) ? "stue-loft" : ("gjpqy".includes(c.toLowerCase()) ? "stue-kjeller" : "stue");
-            return `<div class="box ${cls}"><span>${isFasit ? c : ''}</span></div>`;
-        }
-    }).join('');
-
-    const linesHtml = `<div class="lines-container printable-lines"><div class="l"></div><div class="l"></div><div class="l thick"></div><div class="l"></div></div>`;
-
-    return `<div class="word-unit">${imgHtml}<div class="shapes-wrapper">${boxes}</div>${isFasit ? '' : linesHtml}</div>`;
-}
-
-function updateVisibility() {
-    // 1. Håndter synlighet for ordbank og fasit som før
-    document.getElementById('on-page-ordbank').classList.toggle('hidden', !document.getElementById('global-ordbank-page').checked);
-    document.getElementById('paper-ordbank-sheet').classList.toggle('hidden', !document.getElementById('global-ordbank-sheet').checked);
-    document.getElementById('paper-fasit').classList.toggle('hidden', !document.getElementById('global-fasit').checked);
-    
-    // 2. Håndter skrivelinjer
-    const showLines = document.getElementById('global-lines').checked;
-    document.querySelectorAll('.printable-lines').forEach(el => {
-        el.classList.toggle('hidden', !showLines);
-    });
-
-    // 3. NYTT: Oppdater instruksjonsteksten dynamisk
-    const taskDesc = document.getElementById('task-desc');
-    const ekstraTekst = " Skriv ordene også riktig inn i linjesystemene.";
-    
-    // Vi fjerner først teksten (hvis den finnes) for å unngå at den legges til dobbelt
-    let renTekst = taskDesc.innerText.replace(ekstraTekst, "");
-
-    if (showLines) {
-        taskDesc.innerText = renTekst + ekstraTekst;
-    } else {
-        taskDesc.innerText = renTekst;
+        document.getElementById('gridOutput').innerHTML = "";
+        document.getElementById('gridOutput').appendChild(table);
+        const sorted = [...rawWords].sort((a,b) => a.localeCompare(b, 'nb'));
+        document.getElementById('wordListOutput').innerHTML = `<div class="word-list-box"><h3>Ordliste</h3><ul>${sorted.map(w => `<li>${w}</li>`).join('')}</ul></div>`;
+        updateView();
     }
-}
 
+    function downloadFullImage() {
+        const element = document.getElementById('capture-area');
+        if (!element || document.getElementById('gridOutput').innerHTML === "") {
+            alert("Generer et gitter først!");
+            return;
+        }
+        html2canvas(element, {
+            backgroundColor: "#ffffff",
+            scale: 2,
+            onclone: (clonedDoc) => {
+                const area = clonedDoc.getElementById('capture-area');
+                area.style.display = "inline-flex";
+                area.style.padding = "40px";
+                area.style.boxShadow = "none";
+            }
+        }).then(canvas => {
+            const link = document.createElement('a');
+            link.download = 'gitter_oppgave.png';
+            link.href = canvas.toDataURL("image/png");
+            link.click();
+        });
+    }
 function toggleMenu() {
     document.getElementById("myDropdown").classList.toggle("show");
 }
@@ -995,6 +517,7 @@ window.onclick = function(event) {
         }
     }
 }
+    updateView();
 </script>
 </body>
 </html>
