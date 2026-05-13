@@ -69,8 +69,17 @@
     .sidebar h2 { margin: 0 0 15px 0; font-size: 1.1rem; text-align: center; text-transform: uppercase; }
 
     textarea { 
-        width: 100%; height: 120px; padding: 10px; border-radius: 6px; border: none; 
-        font-family: inherit; font-size: 0.9rem; box-sizing: border-box; margin-bottom: 15px; background-color: #ecf0f1;
+        width: 100%; 
+        height: 95px; 
+        padding: 10px; 
+        border-radius: 6px; 
+        border: none; 
+        font-family: inherit; 
+        font-size: 0.9rem; 
+        box-sizing: border-box; 
+        margin-bottom: 15px; 
+        background-color: #ecf0f1;
+        resize: none;
     }
 
     .action-btn:hover {
@@ -90,8 +99,25 @@
     .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
     input:checked + .slider { background-color: #27ae60; }
     input:checked + .slider:before { transform: translateX(20px); }
+.action-btn { 
+    width: 100%; 
+    padding: 10px; 
+    border-radius: 8px; 
+    border: none; 
+    font-weight: 600; 
+    cursor: pointer; 
+    /* Fjern margin-bottom herfra hvis du vil styre det via rader */
+    margin-bottom: 0; 
+    color: white; 
+    transition: 0.2s;
+    box-sizing: border-box; 
+    font-size: 0.85rem;
+    display: flex;         /* Lagt til for å sentrere tekst perfekt */
+    align-items: center;   /* Lagt til */
+    justify-content: center; /* Lagt til */
+}
 
-    .action-btn { width: 100%; padding: 12px; border-radius: 6px; border: none; font-weight: bold; text-transform: uppercase; cursor: pointer; font-size: 0.85rem; transition: 0.2s; margin-bottom: 8px; }
+
     .btn-generate { background-color: var(--accent-green); color: white; }
     .btn-row { display: flex; gap: 8px; }
 
@@ -288,13 +314,18 @@
             <span style="color: #ff7675;">Vis fasit</span>
             <label class="switch"><input type="checkbox" id="toggleFasit" onchange="updateView()"><span class="slider"></span></label>
         </div>
+<div style="margin-bottom: 109px;">
     </div>
-    <div class="btn-group">
-        <button class="action-btn btn-generate" onclick="generate()">Generer gitter</button>
-        <button class="action-btn" style="background-color: #ff7675; color: white;" onclick="resetForm()">Nullstill</button>
-        <div class="btn-row">
-            <button class="action-btn" style="background-color: #3b82f6; color: white;" onclick="window.print()">Skriv ut</button>
-            <button class="action-btn" style="background-color: #9b59b6; color: white;" onclick="downloadFullImage()">Last ned bilde</button>
+
+
+<div class="btn-group" style="display: flex; gap: 10px; margin-bottom: 10px; align-items: stretch;">
+    <button class="action-btn btn-generate" onclick="generate()" style="flex: 2; white-space: nowrap; margin-bottom: 0;">LAG GITTER</button>
+    <button class="action-btn" onclick="resetForm()" style="flex: 1; white-space: nowrap; background-color: #ff7675; color: white; margin-bottom: 0;">NULLSTILL</button>
+</div>
+
+<div class="btn-row" style="display: flex; gap: 10px;">
+    <button class="action-btn" style="flex: 1; background-color: #2980b9; color: white; margin-bottom: 0;" onclick="window.print()">SKRIV UT</button>
+    <button class="action-btn" style="flex: 1; background-color: #9b59b6; color: white; margin-bottom: 0;" onclick="downloadFullImage()">LAST NED BILDE</button>
         </div>
     </div>
 </div>
