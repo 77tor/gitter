@@ -129,17 +129,20 @@
     .btn-group { display: flex; gap: 10px; margin-bottom: 10px; align-items: stretch; margin-top: auto; }
 
     /* HOVEDOMRÅDE OG SKALERING AV A4-ARKET PÅ SKJERM */
+/* HOVEDOMRÅDE: Lager et stabilt vindu som lar innholdet rulle fritt */
     .main-content { 
         flex-grow: 1; 
         overflow: auto; 
         display: flex; 
         justify-content: center; 
-        align-items: center; 
-        padding: 20px; 
-        transition: background-color 0.3s ease; 
+        align-items: flex-start; 
+        padding: 40px 20px; 
+        box-sizing: border-box;
+        height: 100vh; /* Holder seg trygt innenfor nettleservinduet */
     }
     
-    #capture-area { 
+    /* PREVIEW-ARKET: Her bestemmer vi størrelsen direkte */
+#capture-area { 
         background: #ffffff !important; 
         width: 210mm;         
         height: 297mm;    
@@ -150,9 +153,17 @@
         align-items: center;  
         box-shadow: 0 10px 30px rgba(0,0,0,0.15); 
         position: relative; 
-        transform: scale(0.65); 
-        transform-origin: center center;
+        flex-shrink: 0;
+        
+        /* ØKT STØRRELSE: Satt til 0.68 (68% størrelse) */
+        transform: scale(0.68); 
+        transform-origin: top center; 
+        
+        /* JUSTERT MARGIN: Siden arket er større, krymper vi det usynlige tomrommet til -300px */
+        margin-top: 10px;
+        margin-bottom: -300px; 
     }
+
 
     .table-container { 
         display: flex; 
@@ -261,6 +272,9 @@
     body.tema-standard .main-content { background-color: #d1d8e0; }
     body.tema-standard #capture-area { border: 6px solid #2b6cb0; }
 
+    body.theme-logo .main-content { background-color: #d1d8e0; }
+    body.theme-logo #capture-area { border: 6px solid #2b6cb0; }
+
     body.tema-skog .main-content { background-color: #dbebd7; }
     body.tema-skog #capture-area { border: 6px solid #2f855a; }
 
@@ -317,6 +331,7 @@
     #theme-img-3 { bottom: 25px; right: 25px; }    
 
     .theme-dino #theme-img-1, .theme-dino #theme-img-2, .theme-dino #theme-img-3,
+    .theme-logo #theme-img-1, .theme-logo #theme-img-2, .theme-logo #theme-img-3,
     .theme-fest #theme-img-1, .theme-fest #theme-img-2, .theme-fest #theme-img-3,
     .theme-racerbil #theme-img-1, .theme-racerbil #theme-img-2, .theme-racerbil #theme-img-3,
     .theme-kryp #theme-img-1, .theme-kryp #theme-img-2, .theme-kryp #theme-img-3,
@@ -333,6 +348,9 @@
     .theme-dino #theme-img-1 { background-image: url('Bilder/dinosaur_01.png'); }
     .theme-dino #theme-img-2 { background-image: url('Bilder/dinosaur_02.png'); }
     .theme-dino #theme-img-3 { background-image: url('Bilder/dinosaur_03.png'); }
+    .theme-logo #theme-img-1 { background-image: url('Bilder/logo_gitter_01.png'); }
+    .theme-logo #theme-img-2 { background-image: url('Bilder/logo_gitter_02.png'); }
+    .theme-logo #theme-img-3 { background-image: url('Bilder/logo_gitter_03.png'); }
     .theme-fest #theme-img-1 { background-image: url('Bilder/fest_01.png'); }
     .theme-fest #theme-img-2 { background-image: url('Bilder/fest_02.png'); }
     .theme-fest #theme-img-3 { background-image: url('Bilder/fest_03.png'); }
@@ -370,13 +388,58 @@
     .theme-vinter #theme-img-2 { background-image: url('Bilder/vinter_02.png'); }
     .theme-vinter #theme-img-3 { background-image: url('Bilder/vinter_03.png'); }
 
-    /* ==========================================================================
+
+/* Input-felt for egendefinert overskrift i sidemenyen */
+.title-input {
+    width: 60%;
+    padding: 6px;
+    border-radius: 4px;
+    border: none;
+    background: #ecf0f1;
+    font-family: inherit;
+    font-size: 0.85rem;
+    box-sizing: border-box;
+}
+
+/* Overskriftstilen på selve A4-arket */
+.page-title {
+    font-family: 'Trykkskrift', sans-serif;
+    font-size: 2.4rem;
+    margin: 0 0 10px 0;
+    text-align: center;
+    width: 100%;
+    color: #2c3e50;
+    z-index: 6;
+}
+body.uppercase-mode .page-title { text-transform: uppercase; }
+
+/* Sørg for at overskriften skifter farge basert på valgt tema */
+body.tema-standard .page-title { color: #2b6cb0; }
+body.theme-logo .page-title { color: #2b6cb0; }
+body.tema-skog .page-title { color: #2f855a; }
+body.tema-sol .page-title { color: #dd6b20; }
+body.tema-minimal .page-title { color: #000000; }
+body.theme-host .page-title { color: #d35400; }
+body.theme-vinter .page-title { color: #2980b9; }
+body.theme-sommer .page-title { color: #e67e22; }
+body.theme-rommet .page-title { color: #8e44ad; }
+body.theme-fest .page-title { color: #e91e63; }
+body.theme-racerbil .page-title { color: #c0392b; }
+body.theme-kryp .page-title { color: #27ae60; }
+body.theme-sommerfugl .page-title { color: #8e44ad; }
+body.theme-halloween .page-title { color: #d35400; }
+body.theme-jul .page-title { color: #c0392b; }
+body.theme-dino .page-title { color: #5d4037; }
+body.theme-pirat .page-title { color: #2c3e50; }
+body.theme-sport .page-title { color: #1e824c; }
+
+/* ==========================================================================
        UTSKRIFT: LÅSER RAMMEN DIREKTE TIL YTTERKANTEN AV A4
        ========================================================================== */
     @media print {
         @page {
             size: A4 portrait;
-            margin: 8mm !important; /* Dette definerer avstanden fra ytterkant papir til rammen */
+            margin: 8mm !important; 
         }
         
         html, body {
@@ -389,29 +452,36 @@
 
         .sidebar { display: none !important; }
         
+        /* OPPDATERT: Nullstiller alt av høyder og rulling for utskrift */
         .main-content { 
             background-color: #ffffff !important; 
             padding: 0 !important; 
             margin: 0 !important;
             display: block !important; 
             overflow: hidden !important;
-            height: 100% !important;
+            height: auto !important; /* Endret fra 100% til auto */
             width: 100% !important;
         }
         
+        /* OPPDATERT: Sletter effekten av skjerm-skaleringen og fjerner margin-kræsjet */
         #capture-area { 
             display: flex !important;
-            position: absolute !important;
+            position: relative !important; /* Endret fra absolute til relative */
             left: 0 !important;
             top: 0 !important;
-            /* Tvinger arket til å fylle hele det tilgjengelige utskriftsområdet ut mot marginene */
             width: 100% !important; 
             height: 100% !important; 
             box-shadow: none !important; 
-            transform: none !important; 
+            transform: none !important; /* Sørger for at 0.68-skalaen nullstilles */
             padding: 25mm 20mm !important; 
             box-sizing: border-box !important;
-            page-break-inside: avoid;
+            page-break-inside: avoid !important;
+            page-break-after: avoid !important;
+            
+            /* SIKRER NULLSTILLING AV SKJERM-MARGINENE: */
+            margin-top: 0 !important;
+            margin-bottom: 0 !important; 
+            
             -webkit-print-color-adjust: exact !important; 
             print-color-adjust: exact !important;
         }
@@ -432,6 +502,7 @@
             background-color: #ffffff !important;
         }
     }
+
 </style>
 </head>
 <body class="tema-standard">
@@ -479,6 +550,7 @@
             <span>Visuelt tema</span>
             <select id="temaVelger" onchange="oppdaterTema()">
                 <option value="tema-standard">Standard (Blå/Grå)</option>
+                <option value="theme-logo">Standard (med logo)</option>
                 <option value="tema-skog">Skog og Natur (Grønn)</option>
                 <option value="tema-sol">Solskinn (Gul/Oransje)</option>
                 <option value="tema-minimal">Minimalistisk (Svart/Hvit)</option>
@@ -497,6 +569,10 @@
                 <option value="theme-sport">⚽️ Sport / Aktivitet</option>
             </select>
         </div>
+<div class="control-item">
+    <span>Overskrift</span>
+    <input type="text" id="titleInput" class="title-input" placeholder="Gitteroppgave" oninput="oppdaterOverskrift()">
+</div>
 
         <div class="btn-group">
             <button class="action-btn btn-generate" onclick="generate()" style="flex: 2; white-space: nowrap;">LAG GITTER</button>
@@ -519,7 +595,9 @@
         <div id="theme-img-1" class="theme-image"></div>
         <div id="theme-img-2" class="theme-image"></div>
         <div id="theme-img-3" class="theme-image"></div>
-        
+
+        <h1 id="pageTitle" class="page-title">Gitteroppgave</h1>
+
         <div class="table-container">
             <div id="numberColumn" class="row-numbers"></div>
             <div style="display: table;">
@@ -552,7 +630,7 @@
         if (!ark || !temaVelger) return;
 
         const alleTemaer = [
-            'tema-standard', 'tema-skog', 'tema-sol', 'tema-minimal', 
+            'tema-standard', 'theme-logo', 'tema-skog', 'tema-sol', 'tema-minimal', 
             'theme-host', 'theme-vinter', 'theme-sommer', 
             'theme-rommet', 'theme-fest', 'theme-racerbil', 'theme-kryp', 'theme-sommerfugl', 'theme-halloween', 
             'theme-jul', 'theme-dino', 'theme-pirat', 'theme-sport'
@@ -561,6 +639,17 @@
         body.classList.remove(...alleTemaer);
         body.classList.add(temaVelger.value);
     }
+
+// Funksjon som oppdaterer overskriften dynamisk når du skriver
+function oppdaterOverskrift() {
+    const inputFelt = document.getElementById('titleInput');
+    const arkTittel = document.getElementById('pageTitle');
+    if (inputFelt.value.trim() === "") {
+        arkTittel.textContent = "Gitteroppgave";
+    } else {
+        arkTittel.textContent = inputFelt.value;
+    }
+}
 
     function resetForm() {
         if(!confirm("Nullstille alt?")) return;
@@ -572,6 +661,8 @@
         document.getElementById('capture-area').style.display = 'none';
         document.querySelectorAll('input[type=checkbox]').forEach(el => el.checked = false);
         document.getElementById('temaVelger').value = 'tema-standard';
+        document.getElementById('titleInput').value = ""; 
+        document.getElementById('pageTitle').textContent = "Gitteroppgave";
         oppdaterTema();
         updateView();
     }
