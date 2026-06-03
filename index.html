@@ -148,7 +148,7 @@
     background: #ffffff !important; 
     width: 210mm;         
     height: 297mm;        
-    padding: 20mm 18mm !important; 
+    padding: 15mm 18mm 20mm 18mm !important;
     box-sizing: border-box; 
     display: flex; 
     flex-direction: column;
@@ -185,7 +185,7 @@
         border: 1px solid #7f8c8d;
         border-radius: 4px;
         background-color: #fcfcfc;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-family: 'trykkskrift', Tahoma, Geneva, Verdana, sans-serif;
         font-size: 1rem;
         color: #2c3e50;
         width: fit-content;
@@ -209,7 +209,7 @@
     }
 
     .num-cell {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+        font-family: 'Trykkskrift', Tahoma, Geneva, Verdana, sans-serif; 
         font-style: italic;
         font-size: 0.9rem;
         color: #7f8c8d;
@@ -262,6 +262,7 @@
     .cell-content { display: none; }
     .show-fasit .cell-content { display: block; }
 
+
 /* ORDLISTE */
 .word-list-box { 
     padding: 2px; 
@@ -295,7 +296,6 @@
     /* Hold på det tette mellomrommet som gir perfekt linje 1 */
     gap: 10px 8px; 
 }
-
 .word-list-box ul li { 
     padding: 2px 0; 
     border: none; 
@@ -309,6 +309,19 @@
        MEN setter en max-width slik at ordene på linje 2 ikke kan blåse seg opp! */
     flex: 1;
     max-width: fit-content;
+}
+.word-list-box ul li.uten-nummer {
+    flex-grow: 0 !important;
+    margin-right: 30px !important;
+    margin-bottom: 10px !important;
+    display: inline-block !important;
+}
+
+#gridOutput {
+    margin-top: 10px; 
+    display: flex;
+    justify-content: center;
+    width: 100%;
 }
 
 /* DEN MAGISKE LØSNINGEN FOR LINJE 2:
@@ -578,7 +591,7 @@ body.theme-sport .page-title { color: #1e824c; }
         
         width: 210mm !important;   
         height: 297mm !important;  
-        padding: 20mm 18mm !important; 
+        padding: 15mm 18mm 20mm 18mm !important;
         
         box-shadow: none !important; 
         transform: none !important;
@@ -607,13 +620,18 @@ body.theme-sport .page-title { color: #1e824c; }
         max-width: 100% !important;
         box-sizing: border-box !important;
     }
-
+  
+    /* Sikrer at overskriften inni boksen fortsatt holder seg sentrert og ikke dyttes til venstre */
+    .word-list-box h3 {
+        margin-right: 0 !important;
+        display: block !important;
+    }
     .word-list-box ul {
         display: flex !important;
         flex-direction: row !important;
         flex-wrap: wrap !important;       
         justify-content: space-between !important; /* Holder linje 1 stiv og perfekt ut til kantene */
-        gap: 10px 8px !important;         
+        gap: 1px 1px !important;         
         width: 100% !important;
         padding: 0 !important;
         margin: 0 !important;
@@ -621,8 +639,6 @@ body.theme-sport .page-title { color: #1e824c; }
     }
 
     /* DENS ENKLE FIXEN FOR MIDTSTILLING AV RAD 2:
-       I stedet for å fylle hele høyre side, tar vi en automatisk margin på venstre side av den tomme plassen.
-       Det tvinger tekst-ordene foran til å sentrere seg på den linjen de ligger på! */
     .word-list-box ul::after {
         content: "" !important;
         flex: 1 1 auto !important;
@@ -639,6 +655,12 @@ body.theme-sport .page-title { color: #1e824c; }
         flex-grow: 1 !important; /* Sørger for den nydelige, maksimale strekken på linje 1 */
     }
 
+.word-list-box ul li.uten-nummer {
+    flex-grow: 0 !important;
+    margin-right: 30px !important;
+    margin-bottom: 10px !important;
+    display: inline-block !important;
+}
     /* TVING TABELLEN/GITTERET TIL Å MIDTSTILLE SEG PÅ PAPIRET */
     #gridOutput table {
         margin: 0 auto !important;       
@@ -1032,16 +1054,17 @@ let vowelBox = document.createElement('div');
 vowelBox.id = 'vowelLineElement';
 vowelBox.className = 'vowel-line'; // Matcher klassen i CSS
 
-// Vi legger på litt styling direkte på boksen for bakgrunnsfarge og luft
-vowelBox.style.backgroundColor = '#f8f9fa'; // Lys grå farge
-vowelBox.style.padding = '8px 12px';        // Luft på innsiden av boksen
-vowelBox.style.borderRadius = '6px';        // Myke, runde hjørner
-vowelBox.style.marginTop = '10px';          // Litt avstand til elementet over
-vowelBox.style.display = 'inline-block';    // Gjør at boksen ikke blir bredere enn innholdet
+// STYLING FOR DEN GRÅ BOKSEN
+vowelBox.style.backgroundColor = '#E2ECE9'; 
+vowelBox.style.padding = '2px 14px';        // ENDRET: Mye mindre på topp/bunn (2px), litt mer på sidene (14px)
+vowelBox.style.borderRadius = '6px';        
+vowelBox.style.marginTop = '10px';          
+vowelBox.style.display = 'inline-block';    
+vowelBox.style.lineHeight = '1';            // NY: Tvinger teksten til å bruke minimalt med høyde
 
 vowelBox.innerHTML = `
-    <span style="font-weight: bold; margin-right: 12px; font-family: 'Segoe UI', sans-serif; font-size: 1.1rem; color: #2c3e50;">Vokaler:</span>
-    <span id="vowelListContent" style="font-family: 'trykkskrift', sans-serif; font-size: 1.1rem; letter-spacing: 3px;">a e i o u y æ ø å</span>
+    <span style="font-weight: bold; margin-right: 12px; font-family: 'Trykkskrift', sans-serif; font-size: 1.3rem; color: #2c3e50; line-height: 1;">Vokaler:</span>
+    <span id="vowelListContent" style="font-family: 'Trykkskrift', sans-serif; font-size: 2rem; letter-spacing: 8px; line-height: 1;">a e i o u y æ ø å</span>
 `;
 boksContainer.appendChild(vowelBox);
 
@@ -1057,8 +1080,8 @@ if (tommeFeltErMarkert) {
             const j = Math.floor(Math.random() * (i + 1));
             [tilfeldigeOrd[i], tilfeldigeOrd[j]] = [tilfeldigeOrd[j], tilfeldigeOrd[i]];
         }
-        // Legg til en usynlig li-tag på slutten (.filler-space)
-        ordlisteHTML = tilfeldigeOrd.map(w => `<li>${w}</li>`).join('') + '<li class="filler-space"></li>';
+        // ENDRET HER: Vi legger på en egen klasse (uten-nummer) og legger inn et fysisk mellomrom etter hvert ord
+        ordlisteHTML = tilfeldigeOrd.map(w => `<li class="uten-nummer">${w}&nbsp;&nbsp;&nbsp;</li>`).join('') + '<li class="filler-space"></li>';
     } else {
         // Legg til en usynlig li-tag på slutten (.filler-space)
         ordlisteHTML = rawWords.map((w, idx) => `<li>${idx + 1}. ${w}</li>`).join('') + '<li class="filler-space"></li>';
