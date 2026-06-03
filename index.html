@@ -25,6 +25,7 @@
         --accent-green: #27ae60;
         --sidebar-text: #ffffff;
         --main-bg: #d1d8e0; 
+        --cell-size: 42px; /* Standard (middels) størrelse */
     }
 
     body { 
@@ -119,7 +120,7 @@
         transition: 0.2s;
         box-sizing: border-box; 
         font-size: 0.85rem;
-        display: flex;         
+        display: flex;              
         align-items: center;   
         justify-content: center; 
     }
@@ -128,64 +129,118 @@
     .btn-row { display: flex; gap: 8px; }
     .btn-group { display: flex; gap: 10px; margin-bottom: 10px; align-items: stretch; margin-top: auto; }
 
-    /* HOVEDOMRÅDE OG SKALERING AV A4-ARKET PÅ SKJERM */
-/* HOVEDOMRÅDE: Lager et stabilt vindu som lar innholdet rulle fritt */
-    .main-content { 
-        flex-grow: 1; 
-        overflow: auto; 
-        display: flex; 
-        justify-content: center; 
-        align-items: flex-start; 
-        padding: 40px 20px; 
-        box-sizing: border-box;
-        height: 100vh; /* Holder seg trygt innenfor nettleservinduet */
-    }
-    
-    /* PREVIEW-ARKET: Her bestemmer vi størrelsen direkte */
+/* ==========================================================================
+   HOVEDOMRÅDE: PLASSERER ARKET HØYT OG GODT PÅ SKJERMEN
+   ========================================================================== */
+.main-content { 
+    flex-grow: 1; 
+    overflow: hidden;    
+    display: flex; 
+    justify-content: center; 
+    align-items: flex-start; /* Sørger for at det starter øverst */
+    padding: 20px; 
+    box-sizing: border-box;
+    height: 100vh;       
+    background-color: var(--main-bg); 
+}
+
 #capture-area { 
-        background: #ffffff !important; 
-        width: 210mm;         
-        height: 297mm;    
-        padding: 30mm 20mm;   
-        box-sizing: border-box;
-        display: flex; 
-        flex-direction: column;
-        align-items: center;  
-        box-shadow: 0 10px 30px rgba(0,0,0,0.15); 
-        position: relative; 
-        flex-shrink: 0;
-        
-        /* ØKT STØRRELSE: Satt til 0.68 (68% størrelse) */
-        transform: scale(0.68); 
-        transform-origin: top center; 
-        
-        /* JUSTERT MARGIN: Siden arket er større, krymper vi det usynlige tomrommet til -300px */
-        margin-top: 10px;
-        margin-bottom: -300px; 
-    }
-
-
-    .table-container { 
-        display: flex; 
-        align-items: flex-start; 
-        gap: 20px; 
-        position: relative; 
-        z-index: 6; 
-        margin-top: 40px; 
-    }
+    background: #ffffff !important; 
+    width: 210mm;         
+    height: 297mm;        
+    padding: 20mm 18mm !important; 
+    box-sizing: border-box; 
+    display: flex; 
+    flex-direction: column;
+    align-items: center;  
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15); 
     
-    .row-numbers { display: flex; flex-direction: column; padding-top: 55px; }
-    .num-item { height: 42px; display: flex; align-items: center; justify-content: flex-end; width: 30px; padding-right: 10px; font-style: italic; font-size: 0.9rem; color: #7f8c8d; }
+    /* DENNE LINJEN ER LIVSVIKTIG FOR AT BILDENE SKAL VISES INNE PÅ ARKET: */
+    position: relative !important; 
+    
+    flex-shrink: 0;
+    margin: 30px auto 0 auto; 
+
+    /* Skalerer ned arket nydelig på skjermen */
+    transform: scale(0.75); 
+    transform-origin: top center; 
+}
+
+    /* Fellesregel som posisjonerer temalinjen nøyaktig der den skrives ut */
+    #capture-area::after {
+        content: "";
+        position: absolute;
+        top: 10mm;    
+        left: 10mm;   
+        right: 10mm;  
+        bottom: 10mm; 
+        pointer-events: none; 
+        z-index: 1;
+        box-sizing: border-box;
+    }
+
+    .vowel-box {
+        margin-top: 15px;
+        padding: 10px 15px;
+        border: 1px solid #7f8c8d;
+        border-radius: 4px;
+        background-color: #fcfcfc;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-size: 1rem;
+        color: #2c3e50;
+        width: fit-content;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    .vowel-title {
+        font-weight: bold;
+        margin-right: 8px;
+    }
+
+    .vowel-list {
+        letter-spacing: 5px; 
+        font-weight: 600;
+        color: #e74c3c; 
+    }
+
+    .row-numbers { 
+        display: none; 
+    }
+
+    .num-cell {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+        font-style: italic;
+        font-size: 0.9rem;
+        color: #7f8c8d;
+        text-align: right !important;
+        padding-right: 4px !important;
+        border: none !important; 
+        background: transparent !important;
+        width: 18px !important;
+        white-space: nowrap;
+        height: calc(var(--cell-size) * 1.20) !important;
+    }
+
+    .header-row td.num-cell-blank, 
+    .num-cell-blank {
+        border: none !important;
+        border-color: transparent !important;
+        outline: none !important;
+        background: transparent !important;
+        background-color: transparent !important;
+        width: 18px !important;
+    }
 
     table { border-collapse: collapse; }
-    td, .word-list-box { font-family: 'Trykkskrift', sans-serif; }
+    td, .word-list-box, .vowel-line { font-family: 'Trykkskrift', sans-serif; }
 
     td { 
         border: 1px solid #000 !important; 
-        width: 42px; 
-        height: 42px; 
+        width: var(--cell-size) !important; 
+        height: calc(var(--cell-size) * 1.20) !important; 
         text-align: center; 
-        font-size: 1.3rem; 
+        font-size: calc(var(--cell-size) * 0.45); 
         position: relative;
         background-color: white !important;
     }
@@ -195,54 +250,103 @@
     body.hide-ends-active .inactive { background-color: white !important; }
     body.hide-ends-active.show-vowel-bg .is-vowel-cell { background-color: var(--vokal-farge) !important; }
 
-    .header-row td { border: 2px solid #000 !important; height: 48px; }
+    .header-row td { 
+        border: 2px solid #000 !important; 
+        height: calc(var(--cell-size) * 1.15) !important; 
+    }
     .v-text { color: var(--vokal-tekst); }
     .k-text { color: var(--konsonant-tekst); }
     .header-row .k-text { color: var(--konsonant-overskrift); }
 
-    body.uppercase-mode td, body.uppercase-mode .word-list-box { text-transform: uppercase; }
+    body.uppercase-mode td, body.uppercase-mode .word-list-box, body.uppercase-mode .vowel-line { text-transform: uppercase; }
     .cell-content { display: none; }
     .show-fasit .cell-content { display: block; }
 
-    /* ORDLISTE */
-    .word-list-box { 
-        border: 2px solid #333; 
-        padding: 15px; 
-        margin-top: 30px; 
-        background: white; 
-        width: 100%; 
-        box-sizing: border-box; 
-        display: block; 
-        min-width: 100%; 
-        max-width: 0; 
-    }
+/* ORDLISTE */
+.word-list-box { 
+    padding: 2px; 
+    margin-top: 30px; 
+    background: white; 
+    width: 100%; 
+    box-sizing: border-box; 
+    display: block; 
+    min-width: 100%; 
+    max-width: 100%; 
+}
 
-    .word-list-box h3 { 
-        margin: 0 0 10px 0; 
-        text-align: center; 
-        border-bottom: 2px solid #333; 
-        padding-bottom: 5px; 
-    }
+.word-list-box h3 { 
+    margin: 0 0 10px 0; 
+    text-align: center; 
+    border-bottom: 2px solid #333; 
+    padding-bottom: 5px; 
+}
 
-    .word-list-box ul {  
-        list-style: none; 
-        padding: 0; 
-        margin: 0;
-        display: flex; 
-        flex-wrap: wrap; 
-        justify-content: center; 
-        gap: 10px 20px; 
-    }
+.word-list-box ul {  
+    list-style: none; 
+    padding: 0 !important; 
+    margin: 0 !important;
+    display: flex; 
+    flex-wrap: wrap; 
+    width: 100% !important; 
+    
+    /* FIX 1: Bytt til center! Dette samler linje 2 pent på midten */
+    justify-content: center; 
+    
+    /* Hold på det tette mellomrommet som gir perfekt linje 1 */
+    gap: 10px 8px; 
+}
 
-    .word-list-box li { 
-        padding: 2px 0; 
-        border: none; 
-        white-space: nowrap; 
-    }
+.word-list-box ul li { 
+    padding: 2px 0; 
+    border: none; 
+    white-space: nowrap; 
+    font-family: 'Trykkskrift', sans-serif;
+    font-size: 1.5rem; 
+    font-weight: 500;
+    text-align: center;
+    
+    /* FIX 2: Vi bruker flex: 1 for å tvinge ordene til å fylle linje 1 helt ut,
+       MEN setter en max-width slik at ordene på linje 2 ikke kan blåse seg opp! */
+    flex: 1;
+    max-width: fit-content;
+}
+
+/* DEN MAGISKE LØSNINGEN FOR LINJE 2:
+   Dette elementet er usynlig, men støvsuger til seg alt overflødig tomrom på den siste linjen */
+.word-list-box ul li.filler-space {
+    flex-grow: 999; /* Tar alt tomrommet */
+    max-width: none !important;
+    padding: 0;
+    margin: 0;
+    height: 0;
+}
 
     .alt-indicator { display: none; position: absolute; top: 1px; right: 1px; color: var(--alt-match); font-size: 0.5rem; }
     .show-fasit .alt-indicator { display: block; }
     .show-fasit .is-alt-start { outline: 2px dashed var(--alt-match); outline-offset: -4px; }
+
+    .vowel-line {
+        visibility: hidden; 
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-size: 1.1rem;
+        width: fit-content;
+        margin: 0 auto; 
+        padding: 4px 16px; 
+        border: 1px solid #7f8c8d;
+        border-radius: 6px;
+        background-color: #fcfcfc;
+        text-align: center;
+    }
+
+    body.show-vowel-line-active .vowel-line { 
+        visibility: visible !important; 
+    }
+
+    #vowelListContent {
+        letter-spacing: 2px;
+        font-weight: 600;
+        color: #e74c3c; 
+    }
 
     /* HAMBURGER MENY */
     .menu-container { position: relative; margin-bottom: 0; margin-right: 15px; }
@@ -268,128 +372,133 @@
     .dropdown-menu a:hover { background-color: #34495e; }
     .menu-item-disabled { opacity: 0.4; filter: grayscale(100%); pointer-events: none; cursor: default; }
 
-    /* TEMA CONFIG */
-    body.tema-standard .main-content { background-color: #d1d8e0; }
-    body.tema-standard #capture-area { border: 6px solid #2b6cb0; }
 
-    body.theme-logo .main-content { background-color: #d1d8e0; }
-    body.theme-logo #capture-area { border: 6px solid #2b6cb0; }
+/* ==========================================================================
+   TEMA CONFIG: KLASSISKE RAMMER LÅST TIL SKJERM OG PRINT ::AFTER
+   ========================================================================== */
+body.theme-standard .main-content { background-color: #d1d8e0; }
+body.theme-standard #capture-area::after { border: 6px solid #2b6cb0 !important; }
 
-    body.tema-skog .main-content { background-color: #dbebd7; }
-    body.tema-skog #capture-area { border: 6px solid #2f855a; }
+body.theme-skog .main-content { background-color: #dbebd7; }
+body.theme-skog #capture-area::after { border: 6px solid #2f855a !important; }
 
-    body.tema-sol .main-content { background-color: #f7e6ce; }
-    body.tema-sol #capture-area { border: 6px solid #dd6b20; }
+body.theme-sol .main-content { background-color: #f7e6ce; }
+body.theme-sol #capture-area::after { border: 6px solid #dd6b20 !important; }
 
-    body.tema-minimal .main-content { background-color: #f0f0f0; }
-    body.tema-minimal #capture-area { border: 3px solid #000000; }
+body.theme-minimal .main-content { background-color: #f0f0f0; }
+body.theme-minimal #capture-area::after { border: 0px solid #000000 !important; }
 
-    body.theme-host .main-content { background-color: #eedec8; }
-    body.theme-host #capture-area { border: 8px double #d35400; }
+body.theme-host .main-content { background-color: #eedec8; }
+body.theme-host #capture-area::after { border: 8px double #d35400 !important; }
 
-    body.theme-vinter .main-content { background-color: #d2e4f7; }
-    body.theme-vinter #capture-area { border: 6px dashed #3498db; }
+body.theme-vinter .main-content { background-color: #d2e4f7; }
+body.theme-vinter #capture-area::after { border: 6px dashed #3498db !important; }
 
-    body.theme-sommer .main-content { background-color: #f5f0ce; } 
-    body.theme-sommer #capture-area { border: 6px solid #f1c40f; }
+body.theme-sommer .main-content { background-color: #f5f0ce; } 
+body.theme-sommer #capture-area::after { border: 6px solid #f1c40f !important; }
 
-    body.theme-rommet .main-content { background-color: #e5d4ed; }
-    body.theme-rommet #capture-area { border: 6px solid #9b59b6; }
+body.theme-rommet .main-content { background-color: #e5d4ed; }
+body.theme-rommet #capture-area::after { border: 6px solid #9b59b6 !important; }
 
-    body.theme-fest .main-content { background-color: #fcdfed; }
-    body.theme-fest #capture-area { border: 6px dotted #e91e63; }
+body.theme-fest .main-content { background-color: #fcdfed; }
+body.theme-fest #capture-area::after { border: 6px dotted #e91e63 !important; }
 
-    body.theme-racerbil .main-content { background-color: #f7dcd9; }
-    body.theme-racerbil #capture-area { border: 8px double #e53e3e; }
+body.theme-racerbil .main-content { background-color: #f7dcd9; }
+body.theme-racerbil #capture-area::after { border: 8px double #e53e3e !important; }
 
-    body.theme-kryp .main-content { background-color: #deebd9; }
-    body.theme-kryp #capture-area { border: 6px solid #2f855a; }
+body.theme-kryp .main-content { background-color: #deebd9; }
+body.theme-kryp #capture-area::after { border: 6px solid #2f855a !important; }
 
-    body.theme-sommerfugl .main-content { background-color: #ebdcf7; }
-    body.theme-sommerfugl #capture-area { border: 6px dashed #b7791f; }
+body.theme-sommerfugl .main-content { background-color: #ebdcf7; }
+body.theme-sommerfugl #capture-area::after { border: 6px dashed #b7791f !important; }
 
-    body.theme-halloween .main-content { background-color: #f0dfcc; }
-    body.theme-halloween #capture-area { border: 6px solid #333; }
+body.theme-halloween .main-content { background-color: #f0dfcc; }
+body.theme-halloween #capture-area::after { border: 6px solid #333333 !important; }
 
-    body.theme-jul .main-content { background-color: #fce3e1; }
-    body.theme-jul #capture-area { border: 6px dashed #c0392b; }
+body.theme-jul .main-content { background-color: #fce3e1; }
+body.theme-jul #capture-area::after { border: 6px dashed #c0392b !important; }
 
-    body.theme-dino .main-content { background-color: #edeec9; }
-    body.theme-dino #capture-area { border: 6px solid #795548; }
+body.theme-dino .main-content { background-color: #edeec9; }
+body.theme-dino #capture-area::after { border: 6px solid #795548 !important; }
 
-    body.theme-pirat .main-content { background-color: #dce1e6; }
-    body.theme-pirat #capture-area { border: 8px double #34495e; }
+body.theme-pirat .main-content { background-color: #dce1e6; }
+body.theme-pirat #capture-area::after { border: 8px double #34495e !important; }
 
-    body.theme-sport .main-content { background-color: #d2ebd9; }
-    body.theme-sport #capture-area { border: 6px solid #27ae60; }
+body.theme-sport .main-content { background-color: #d2ebd9; }
+body.theme-sport #capture-area::after { border: 6px solid #27ae60 !important; }
 
-    /* TEMA BILDER-INTEGRASJON */
-    .theme-image { position: absolute; width: 110px; height: 110px; background-size: contain; background-repeat: no-repeat; background-position: center; opacity: 0.95; z-index: 5; display: none; }
+/* TEMA BILDER-INTEGRASJON PLASSERING */
+.theme-image { 
+    position: absolute; 
+    width: 110px; 
+    height: 110px; 
+    background-size: contain; 
+    background-repeat: no-repeat; 
+    background-position: center; 
+    opacity: 0.95; 
+    z-index: 5; 
+    display: none; 
+}
 
-    #theme-img-1 { top: 25px; left: 25px; }       
-    #theme-img-2 { top: 25px; right: 25px; }      
-    #theme-img-3 { bottom: 25px; right: 25px; }    
+#theme-img-1 { top: 14mm; left: 14mm; }       
+#theme-img-2 { top: 14mm; right: 14mm; }      
+#theme-img-3 { bottom: 14mm; right: 14mm; }
 
-    .theme-dino #theme-img-1, .theme-dino #theme-img-2, .theme-dino #theme-img-3,
-    .theme-logo #theme-img-1, .theme-logo #theme-img-2, .theme-logo #theme-img-3,
-    .theme-fest #theme-img-1, .theme-fest #theme-img-2, .theme-fest #theme-img-3,
-    .theme-racerbil #theme-img-1, .theme-racerbil #theme-img-2, .theme-racerbil #theme-img-3,
-    .theme-kryp #theme-img-1, .theme-kryp #theme-img-2, .theme-kryp #theme-img-3,
-    .theme-sommerfugl #theme-img-1, .theme-sommerfugl #theme-img-2, .theme-sommerfugl #theme-img-3,
-    .theme-halloween #theme-img-1, .theme-halloween #theme-img-2, .theme-halloween #theme-img-3,
-    .theme-host #theme-img-1, .theme-host #theme-img-2, .theme-host #theme-img-3,
-    .theme-jul #theme-img-1, .theme-jul #theme-img-2, .theme-jul #theme-img-3,
-    .theme-pirat #theme-img-1, .theme-pirat #theme-img-2, .theme-pirat #theme-img-3,
-    .theme-sommer #theme-img-1, .theme-sommer #theme-img-2, .theme-sommer #theme-img-3,
-    .theme-sport #theme-img-1, .theme-sport #theme-img-2, .theme-sport #theme-img-3,
-    .theme-rommet #theme-img-1, .theme-rommet #theme-img-2, .theme-rommet #theme-img-3,
-    .theme-vinter #theme-img-1, .theme-vinter #theme-img-2, .theme-vinter #theme-img-3 { display: block; }
+/* Sørger for at bildene faktisk blir satt til display: block */
+.theme-dino #theme-img-1, .theme-dino #theme-img-2, .theme-dino #theme-img-3,
+.theme-fest #theme-img-1, .theme-fest #theme-img-2, .theme-fest #theme-img-3,
+.theme-racerbil #theme-img-1, .theme-racerbil #theme-img-2, .theme-racerbil #theme-img-3,
+.theme-kryp #theme-img-1, .theme-kryp #theme-img-2, .theme-kryp #theme-img-3,
+.theme-sommerfugl #theme-img-1, .theme-sommerfugl #theme-img-2, .theme-sommerfugl #theme-img-3,
+.theme-halloween #theme-img-1, .theme-halloween #theme-img-2, .theme-halloween #theme-img-3,
+.theme-host #theme-img-1, .theme-host #theme-img-2, .theme-host #theme-img-3,
+.theme-jul #theme-img-1, .theme-jul #theme-img-2, .theme-jul #theme-img-3,
+.theme-pirat #theme-img-1, .theme-pirat #theme-img-2, .theme-pirat #theme-img-3,
+.theme-sommer #theme-img-1, .theme-sommer #theme-img-2, .theme-sommer #theme-img-3,
+.theme-sport #theme-img-1, .theme-sport #theme-img-2, .theme-sport #theme-img-3,
+.theme-rommet #theme-img-1, .theme-rommet #theme-img-2, .theme-rommet #theme-img-3,
+.theme-vinter #theme-img-1, .theme-vinter #theme-img-2, .theme-vinter #theme-img-3 { display: block !important; }
 
-    .theme-dino #theme-img-1 { background-image: url('Bilder/dinosaur_01.png'); }
-    .theme-dino #theme-img-2 { background-image: url('Bilder/dinosaur_02.png'); }
-    .theme-dino #theme-img-3 { background-image: url('Bilder/dinosaur_03.png'); }
-    .theme-logo #theme-img-1 { background-image: url('Bilder/logo_gitter_01.png'); }
-    .theme-logo #theme-img-2 { background-image: url('Bilder/logo_gitter_02.png'); }
-    .theme-logo #theme-img-3 { background-image: url('Bilder/logo_gitter_03.png'); }
-    .theme-fest #theme-img-1 { background-image: url('Bilder/fest_01.png'); }
-    .theme-fest #theme-img-2 { background-image: url('Bilder/fest_02.png'); }
-    .theme-fest #theme-img-3 { background-image: url('Bilder/fest_03.png'); }
-    .theme-racerbil #theme-img-1 { background-image: url('Bilder/racerbil_01.png'); }
-    .theme-racerbil #theme-img-2 { background-image: url('Bilder/racerbil_02.png'); }
-    .theme-racerbil #theme-img-3 { background-image: url('Bilder/racerbil_03.png'); }
-    .theme-kryp #theme-img-1 { background-image: url('Bilder/kryp_01.png'); }
-    .theme-kryp #theme-img-2 { background-image: url('Bilder/kryp_02.png'); }
-    .theme-kryp #theme-img-3 { background-image: url('Bilder/kryp_03.png'); }
-    .theme-sommerfugl #theme-img-1 { background-image: url('Bilder/sommerfugl_01.png'); }
-    .theme-sommerfugl #theme-img-2 { background-image: url('Bilder/sommerfugl_02.png'); }
-    .theme-sommerfugl #theme-img-3 { background-image: url('Bilder/sommerfugl_03.png'); }
-    .theme-halloween #theme-img-1 { background-image: url('Bilder/halloween_01.png'); }
-    .theme-halloween #theme-img-2 { background-image: url('Bilder/halloween_02.png'); }
-    .theme-halloween #theme-img-3 { background-image: url('Bilder/halloween_03.png'); }
-    .theme-host #theme-img-1 { background-image: url('Bilder/host_01.png'); }
-    .theme-host #theme-img-2 { background-image: url('Bilder/host_02.png'); }
-    .theme-host #theme-img-3 { background-image: url('Bilder/host_03.png'); }
-    .theme-jul #theme-img-1 { background-image: url('Bilder/jul_01.png'); }
-    .theme-jul #theme-img-2 { background-image: url('Bilder/jul_02.png'); }
-    .theme-jul #theme-img-3 { background-image: url('Bilder/jul_03.png'); }
-    .theme-pirat #theme-img-1 { background-image: url('Bilder/sjorover_01.png'); }
-    .theme-pirat #theme-img-2 { background-image: url('Bilder/sjorover_02.png'); }
-    .theme-pirat #theme-img-3 { background-image: url('Bilder/sjorover_03.png'); }
-    .theme-sommer #theme-img-1 { background-image: url('Bilder/sommer_01.png'); }
-    .theme-sommer #theme-img-2 { background-image: url('Bilder/sommer_02.png'); }
-    .theme-sommer #theme-img-3 { background-image: url('Bilder/sommer_03.png'); }
-    .theme-sport #theme-img-1 { background-image: url('Bilder/sport_01.png'); }
-    .theme-sport #theme-img-2 { background-image: url('Bilder/sport_02.png'); }
-    .theme-sport #theme-img-3 { background-image: url('Bilder/sport_03.png'); }
-    .theme-rommet #theme-img-1 { background-image: url('Bilder/verdensrommet_01.png'); }
-    .theme-rommet #theme-img-2 { background-image: url('Bilder/verdensrommet_02.png'); }
-    .theme-rommet #theme-img-3 { background-image: url('Bilder/verdensrommet_03.png'); }
-    .theme-vinter #theme-img-1 { background-image: url('Bilder/vinter_01.png'); }
-    .theme-vinter #theme-img-2 { background-image: url('Bilder/vinter_02.png'); }
-    .theme-vinter #theme-img-3 { background-image: url('Bilder/vinter_03.png'); }
+.theme-dino #theme-img-1 { background-image: url('Bilder/dinosaur_01.png'); }
+.theme-dino #theme-img-2 { background-image: url('Bilder/dinosaur_02.png'); }
+.theme-dino #theme-img-3 { background-image: url('Bilder/dinosaur_03.png'); }
+.theme-fest #theme-img-1 { background-image: url('Bilder/fest_01.png'); }
+.theme-fest #theme-img-2 { background-image: url('Bilder/fest_02.png'); }
+.theme-fest #theme-img-3 { background-image: url('Bilder/fest_03.png'); }
+.theme-racerbil #theme-img-1 { background-image: url('Bilder/racerbil_01.png'); }
+.theme-racerbil #theme-img-2 { background-image: url('Bilder/racerbil_02.png'); }
+.theme-racerbil #theme-img-3 { background-image: url('Bilder/racerbil_03.png'); }
+.theme-kryp #theme-img-1 { background-image: url('Bilder/kryp_01.png'); }
+.theme-kryp #theme-img-2 { background-image: url('Bilder/kryp_02.png'); }
+.theme-kryp #theme-img-3 { background-image: url('Bilder/kryp_03.png'); }
+.theme-sommerfugl #theme-img-1 { background-image: url('Bilder/sommerfugl_01.png'); }
+.theme-sommerfugl #theme-img-2 { background-image: url('Bilder/sommerfugl_02.png'); }
+.theme-sommerfugl #theme-img-3 { background-image: url('Bilder/sommerfugl_03.png'); }
+.theme-halloween #theme-img-1 { background-image: url('Bilder/halloween_01.png'); }
+.theme-halloween #theme-img-2 { background-image: url('Bilder/halloween_02.png'); }
+.theme-halloween #theme-img-3 { background-image: url('Bilder/halloween_03.png'); }
+.theme-host #theme-img-1 { background-image: url('Bilder/host_01.png'); }
+.theme-host #theme-img-2 { background-image: url('Bilder/host_02.png'); }
+.theme-host #theme-img-3 { background-image: url('Bilder/host_03.png'); }
+.theme-jul #theme-img-1 { background-image: url('Bilder/jul_01.png'); }
+.theme-jul #theme-img-2 { background-image: url('Bilder/jul_02.png'); }
+.theme-jul #theme-img-3 { background-image: url('Bilder/jul_03.png'); }
+.theme-pirat #theme-img-1 { background-image: url('Bilder/sjorover_01.png'); }
+.theme-pirat #theme-img-2 { background-image: url('Bilder/sjorover_02.png'); }
+.theme-pirat #theme-img-3 { background-image: url('Bilder/sjorover_03.png'); }
+.theme-sommer #theme-img-1 { background-image: url('Bilder/sommer_01.png'); }
+.theme-sommer #theme-img-2 { background-image: url('Bilder/sommer_02.png'); }
+.theme-sommer #theme-img-3 { background-image: url('Bilder/sommer_03.png'); }
+.theme-sport #theme-img-1 { background-image: url('Bilder/sport_01.png'); }
+.theme-sport #theme-img-2 { background-image: url('Bilder/sport_02.png'); }
+.theme-sport #theme-img-3 { background-image: url('Bilder/sport_03.png'); }
+.theme-rommet #theme-img-1 { background-image: url('Bilder/verdensrommet_01.png'); }
+.theme-rommet #theme-img-2 { background-image: url('Bilder/verdensrommet_02.png'); }
+.theme-rommet #theme-img-3 { background-image: url('Bilder/verdensrommet_03.png'); }
+.theme-vinter #theme-img-1 { background-image: url('Bilder/vinter_01.png'); }
+.theme-vinter #theme-img-2 { background-image: url('Bilder/vinter_02.png'); }
+.theme-vinter #theme-img-3 { background-image: url('Bilder/vinter_03.png'); }
 
-
-/* Input-felt for egendefinert overskrift i sidemenyen */
 .title-input {
     width: 60%;
     padding: 6px;
@@ -401,11 +510,10 @@
     box-sizing: border-box;
 }
 
-/* Overskriftstilen på selve A4-arket */
 .page-title {
     font-family: 'Trykkskrift', sans-serif;
     font-size: 2.4rem;
-    margin: 0 0 10px 0;
+    margin: 0 0 5px 0;
     text-align: center;
     width: 100%;
     color: #2c3e50;
@@ -413,12 +521,10 @@
 }
 body.uppercase-mode .page-title { text-transform: uppercase; }
 
-/* Sørg for at overskriften skifter farge basert på valgt tema */
-body.tema-standard .page-title { color: #2b6cb0; }
-body.theme-logo .page-title { color: #2b6cb0; }
-body.tema-skog .page-title { color: #2f855a; }
-body.tema-sol .page-title { color: #dd6b20; }
-body.tema-minimal .page-title { color: #000000; }
+body.theme-standard .page-title { color: #2b6cb0; }
+body.theme-skog .page-title { color: #2f855a; }
+body.theme-sol .page-title { color: #dd6b20; }
+body.theme-minimal .page-title { color: #000000; }
 body.theme-host .page-title { color: #d35400; }
 body.theme-vinter .page-title { color: #2980b9; }
 body.theme-sommer .page-title { color: #e67e22; }
@@ -434,75 +540,122 @@ body.theme-pirat .page-title { color: #2c3e50; }
 body.theme-sport .page-title { color: #1e824c; }
 
 /* ==========================================================================
-       UTSKRIFT: LÅSER RAMMEN DIREKTE TIL YTTERKANTEN AV A4
-       ========================================================================== */
-    @media print {
-        @page {
-            size: A4 portrait;
-            margin: 8mm !important; 
-        }
-        
-        html, body {
-            background-color: #ffffff !important;
-            height: 100% !important;
-            overflow: hidden !important;
-            -webkit-print-color-adjust: exact !important; 
-            print-color-adjust: exact !important;
-        }
-
-        .sidebar { display: none !important; }
-        
-        /* OPPDATERT: Nullstiller alt av høyder og rulling for utskrift */
-        .main-content { 
-            background-color: #ffffff !important; 
-            padding: 0 !important; 
-            margin: 0 !important;
-            display: block !important; 
-            overflow: hidden !important;
-            height: auto !important; /* Endret fra 100% til auto */
-            width: 100% !important;
-        }
-        
-        /* OPPDATERT: Sletter effekten av skjerm-skaleringen og fjerner margin-kræsjet */
-        #capture-area { 
-            display: flex !important;
-            position: relative !important; /* Endret fra absolute til relative */
-            left: 0 !important;
-            top: 0 !important;
-            width: 100% !important; 
-            height: 100% !important; 
-            box-shadow: none !important; 
-            transform: none !important; /* Sørger for at 0.68-skalaen nullstilles */
-            padding: 25mm 20mm !important; 
-            box-sizing: border-box !important;
-            page-break-inside: avoid !important;
-            page-break-after: avoid !important;
-            
-            /* SIKRER NULLSTILLING AV SKJERM-MARGINENE: */
-            margin-top: 0 !important;
-            margin-bottom: 0 !important; 
-            
-            -webkit-print-color-adjust: exact !important; 
-            print-color-adjust: exact !important;
-        }
-
-        /* Sikrer gitter-linjer og boks-kanter */
-        td {
-            border: 1px solid #000000 !important;
-            -webkit-print-color-adjust: exact !important; 
-            print-color-adjust: exact !important;
-        }
-        
-        .header-row td {
-            border: 2px solid #000000 !important;
-        }
-
-        .word-list-box {
-            border: 2px solid #000000 !important;
-            background-color: #ffffff !important;
-        }
+   UTSKRIFT: MATCHES SKJERMVISNINGEN 1:1 (PERFEKT STREKT LINJE 1, MIDTSTILT LINJE 2)
+   ========================================================================== */
+@media print {
+    @page {
+        size: A4 portrait;
+        margin: 0mm !important; 
+    }
+    
+    html, body {
+        background-color: #ffffff !important;
+        height: 100% !important;
+        overflow: hidden !important;
+        -webkit-print-color-adjust: exact !important; 
+        print-color-adjust: exact !important;
     }
 
+    .sidebar { display: none !important; }
+    
+    .main-content { 
+        background-color: #ffffff !important; 
+        padding: 0 !important; 
+        margin: 0 !important;
+        display: flex !important; 
+        justify-content: center !important;
+        align-items: flex-start !important;
+        overflow: hidden !important;
+        height: 100vh !important;
+        width: 100% !important;
+    }
+    
+    #capture-area { 
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;  
+        position: relative !important;
+        
+        width: 210mm !important;   
+        height: 297mm !important;  
+        padding: 20mm 18mm !important; 
+        
+        box-shadow: none !important; 
+        transform: none !important;
+        box-sizing: border-box !important;
+        page-break-inside: avoid !important;
+        page-break-after: avoid !important;
+        margin: 0 auto !important; 
+    }
+
+    #capture-area::after {
+        content: "" !important;
+        position: absolute !important;
+        top: 10mm !important;
+        left: 10mm !important;
+        right: 10mm !important;
+        bottom: 10mm !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        z-index: 1 !important;
+    }
+
+    /* ORDLISTE FOR PRINT - STRREKKER UT RAD 1, MIDTSTILLER RAD 2 */
+    .word-list-box {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .word-list-box ul {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: wrap !important;       
+        justify-content: space-between !important; /* Holder linje 1 stiv og perfekt ut til kantene */
+        gap: 10px 8px !important;         
+        width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        list-style: none !important;
+    }
+
+    /* DENS ENKLE FIXEN FOR MIDTSTILLING AV RAD 2:
+       I stedet for å fylle hele høyre side, tar vi en automatisk margin på venstre side av den tomme plassen.
+       Det tvinger tekst-ordene foran til å sentrere seg på den linjen de ligger på! */
+    .word-list-box ul::after {
+        content: "" !important;
+        flex: 1 1 auto !important;
+        margin-left: auto !important;
+    }
+
+    .word-list-box ul li {
+        font-weight: 500 !important;  
+        line-height: 1.6 !important;  
+        white-space: nowrap !important; 
+        display: inline-block !important;
+        font-size: 1.5rem !important;      
+        text-align: center !important;
+        flex-grow: 1 !important; /* Sørger for den nydelige, maksimale strekken på linje 1 */
+    }
+
+    /* TVING TABELLEN/GITTERET TIL Å MIDTSTILLE SEG PÅ PAPIRET */
+    #gridOutput table {
+        margin: 0 auto !important;       
+        display: table !important;       
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    /* FORHINDRE AT RADENE FORSKYVER SEG */
+    #gridOutput tr {
+        display: table-row !important;
+    }
+
+    #gridOutput td {
+        display: table-cell !important;
+    }
+}
 </style>
 </head>
 <body class="tema-standard">
@@ -531,16 +684,28 @@ body.theme-sport .page-title { color: #1e824c; }
     
     <div class="sidebar-controls">
         <div class="control-item">
-            <span>Marker tomme felt</span>
+            <span>Marker tomme felt - uten rekkefølge</span>
             <label class="switch"><input type="checkbox" id="toggleEnds" onchange="updateView()"><span class="slider"></span></label>
         </div>
         <div class="control-item">
             <span>Vokal-farge</span>
             <label class="switch"><input type="checkbox" id="toggleVowels" onchange="updateView()"><span class="slider"></span></label>
         </div>
+<div class="control-item">
+    <span>Rutestørrelse</span>
+    <select id="sizeVelger" onchange="oppdaterStorrelse()">
+        <option value="34px">Små ruter</option>
+        <option value="42px" selected>Middels ruter</option>
+        <option value="55px">Store ruter</option>
+    </select>
+</div>
         <div class="control-item">
             <span>STORE bokstaver</span>
             <label class="switch"><input type="checkbox" id="toggleCase" onchange="updateView()"><span class="slider"></span></label>
+        </div>
+        <div class="control-item">
+            <span>Vis linje med alle vokalene</span>
+            <label class="switch"><input type="checkbox" id="toggleVowelLine" onchange="updateView()"><span class="slider"></span></label>
         </div>
         <div class="control-item">
             <span style="color: #ff7675;">Vis fasit</span>
@@ -550,11 +715,10 @@ body.theme-sport .page-title { color: #1e824c; }
         <div class="control-item">
             <span>Visuelt tema</span>
             <select id="temaVelger" onchange="oppdaterTema()">
-                <option value="tema-standard">Standard (Blå/Grå)</option>
-                <option value="theme-logo">Standard (med logo)</option>
-                <option value="tema-skog">Skog og Natur (Grønn)</option>
-                <option value="tema-sol">Solskinn (Gul/Oransje)</option>
-                <option value="tema-minimal">Minimalistisk (Svart/Hvit)</option>
+                <option value="theme-standard">Standard (Blå)</option>
+                <option value="theme-skog">Skog og Natur (Grønn)</option>
+                <option value="theme-sol">Solskinn (Gul/Oransje)</option>
+                <option value="theme-minimal">Minimalistisk (uten ramme)</option>
                 <option value="theme-host">🍂 Høst</option>
                 <option value="theme-vinter">❄️ Vinter</option>
                 <option value="theme-sommer">🌸 Sommer</option>
@@ -570,10 +734,10 @@ body.theme-sport .page-title { color: #1e824c; }
                 <option value="theme-sport">⚽️ Sport / Aktivitet</option>
             </select>
         </div>
-<div class="control-item">
-    <span>Overskrift</span>
-    <input type="text" id="titleInput" class="title-input" placeholder="Gitteroppgave" oninput="oppdaterOverskrift()">
-</div>
+        <div class="control-item">
+            <span>Overskrift</span>
+            <input type="text" id="titleInput" class="title-input" placeholder="Gitteroppgave" oninput="oppdaterOverskrift()">
+        </div>
 
         <div class="btn-group">
             <button class="action-btn btn-generate" onclick="generate()" style="flex: 2; white-space: nowrap;">LAG GITTER</button>
@@ -598,21 +762,28 @@ body.theme-sport .page-title { color: #1e824c; }
         <div id="theme-img-3" class="theme-image"></div>
 
         <h1 id="pageTitle" class="page-title">Gitteroppgave</h1>
+        
+        <div id="vowelBoxContainer" style="width: 100%; min-height: 45px; margin-top: -5px; margin-bottom: 5px; display: flex; justify-content: center; align-items: center;"></div>
 
         <div class="table-container">
             <div id="numberColumn" class="row-numbers"></div>
             <div style="display: table;">
                 <div id="gridOutput"></div>
-                <div id="wordListOutput"></div>
             </div>
         </div>
+
+        <div id="wordListOutput" style="width: 100%;"></div>
+        
+    </div>
+
     </div>
 </div>
 
 <script>
     const vokaler = "aeiouyæøå";
 
-    function updateView() {
+
+function updateView() {
         const body = document.body;
         if (!document.getElementById('toggleEnds').checked) body.classList.add('hide-ends-active');
         else body.classList.remove('hide-ends-active');
@@ -622,7 +793,64 @@ body.theme-sport .page-title { color: #1e824c; }
         else body.classList.remove('show-fasit');
         if (document.getElementById('toggleCase').checked) body.classList.add('uppercase-mode');
         else body.classList.remove('uppercase-mode');
+        
+        // Sjekker bryteren for vokallinjen
+        if (document.getElementById('toggleVowelLine').checked) body.classList.add('show-vowel-line-active');
+        else body.classList.remove('show-vowel-line-active');
+
+        // Oppdaterer ordlisten umiddelbart når bryteren flippes
+        if (document.getElementById('gridOutput').innerHTML !== "") {
+            const input = document.getElementById('wordInput').value.trim();
+            const rawWords = input.split(/[\s,]+/).map(w => w.trim()).filter(w => w !== "");
+            let ordlisteHTML = "";
+            
+            // NÅ RIKTIG: Sjekker om bryteren er huket av (checked)
+            const tommeFeltErMarkert = document.getElementById('toggleEnds').checked;
+
+            if (tommeFeltErMarkert) {
+                const tilfeldigeOrd = [...rawWords];
+                for (let i = tilfeldigeOrd.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [tilfeldigeOrd[i], tilfeldigeOrd[j]] = [tilfeldigeOrd[j], tilfeldigeOrd[i]];
+                }
+                ordlisteHTML = tilfeldigeOrd.map(w => `<li>${w}</li>`).join('');
+            } else {
+                ordlisteHTML = rawWords.map((w, idx) => `<li>${idx + 1}. ${w}</li>`).join('');
+            }
+            document.getElementById('wordListOutput').innerHTML = `
+                <div class="word-list-box">
+                    <h3>Ordliste</h3>
+                    <ul>${ordlisteHTML}</ul>
+                </div>
+            `;
+        }
     }
+
+function sjekkOverlappMedBilde() {
+    const ordliste = document.querySelector('.word-list-box');
+    const bilde3 = document.getElementById('theme-img-3');
+    const captureArea = document.getElementById('capture-area');
+
+    if (ordliste && bilde3 && captureArea) {
+        // Nullstill display først så vi får korrekte høydemål
+        bilde3.style.display = ''; 
+        
+        // Finn ut nøyaktig hvor mange piksler ned på arket ordlisten slutter
+        const captureTop = captureArea.getBoundingClientRect().top;
+        const ordlisteMål = ordliste.getBoundingClientRect();
+        const bildeMål = bilde3.getBoundingClientRect();
+        
+        const ordlisteBunnPosisjon = ordlisteMål.bottom - captureTop;
+        const bildeToppPosisjon = bildeMål.top - captureTop;
+
+        // Sikkerhetssone: Hvis bunnen av ordlisten er mindre enn 20 piksler 
+        // unna toppen av bildet (eller har gått forbi det), skjuler vi det.
+        if (ordlisteBunnPosisjon >= (bildeToppPosisjon - 20)) {
+            bilde3.style.setProperty('display', 'none', 'important');
+            console.log("Kollisjon oppdaget! Skjuler bilde 3.");
+        }
+    }
+}
 
     function oppdaterTema() {
         const body = document.body;
@@ -631,7 +859,7 @@ body.theme-sport .page-title { color: #1e824c; }
         if (!ark || !temaVelger) return;
 
         const alleTemaer = [
-            'tema-standard', 'theme-logo', 'tema-skog', 'tema-sol', 'tema-minimal', 
+            'theme-standard', 'theme-skog', 'theme-sol', 'theme-minimal', 
             'theme-host', 'theme-vinter', 'theme-sommer', 
             'theme-rommet', 'theme-fest', 'theme-racerbil', 'theme-kryp', 'theme-sommerfugl', 'theme-halloween', 
             'theme-jul', 'theme-dino', 'theme-pirat', 'theme-sport'
@@ -641,18 +869,25 @@ body.theme-sport .page-title { color: #1e824c; }
         body.classList.add(temaVelger.value);
     }
 
-// Funksjon som oppdaterer overskriften dynamisk når du skriver
-function oppdaterOverskrift() {
-    const inputFelt = document.getElementById('titleInput');
-    const arkTittel = document.getElementById('pageTitle');
-    if (inputFelt.value.trim() === "") {
-        arkTittel.textContent = "Gitteroppgave";
-    } else {
-        arkTittel.textContent = inputFelt.value;
+    function oppdaterOverskrift() {
+        const inputFelt = document.getElementById('titleInput');
+        const arkTittel = document.getElementById('pageTitle');
+        if (inputFelt.value.trim() === "") {
+            arkTittel.textContent = "Gitteroppgave";
+        } else {
+            arkTittel.textContent = inputFelt.value;
+        }
+    }
+
+
+function oppdaterStorrelse() {
+    const sizeVelger = document.getElementById('sizeVelger');
+    if (sizeVelger) {
+        document.documentElement.style.setProperty('--cell-size', sizeVelger.value);
     }
 }
 
-    function resetForm() {
+function resetForm() {
         if(!confirm("Nullstille alt?")) return;
         document.getElementById('wordInput').value = "";
         document.getElementById('gridOutput').innerHTML = "";
@@ -664,6 +899,11 @@ function oppdaterOverskrift() {
         document.getElementById('temaVelger').value = 'tema-standard';
         document.getElementById('titleInput').value = ""; 
         document.getElementById('pageTitle').textContent = "Gitteroppgave";
+        
+        // Her legger du til de to linjene for rutestørrelse:
+        document.getElementById('sizeVelger').value = '42px';
+        oppdaterStorrelse();
+
         oppdaterTema();
         updateView();
     }
@@ -709,70 +949,145 @@ function oppdaterOverskrift() {
         return { master, placements };
     }
 
-    function generate() {
-        const input = document.getElementById('wordInput').value.trim();
-        if (input.length === 0) return;
+function generate() {
+    const input = document.getElementById('wordInput').value.trim();
+    if (input.length === 0) return;
 
-        document.getElementById('placeholder-image').style.display = 'none';
-        document.getElementById('capture-area').style.display = 'flex'; 
+    document.getElementById('placeholder-image').style.display = 'none';
+    document.getElementById('capture-area').style.display = 'flex'; 
 
-        const rawWords = input.split(/[\s,]+/).map(w => w.trim()).filter(w => w !== "");
-        if (rawWords.length === 0) return;
+    const rawWords = input.split(/[\s,]+/).map(w => w.trim()).filter(w => w !== "");
+    if (rawWords.length === 0) return;
 
-        let wordData = rawWords.map(w => ({ word: w, pattern: getPattern(w) }));
-        wordData.sort((a, b) => b.word.length - a.word.length);
+    let wordData = rawWords.map(w => ({ word: w, pattern: getPattern(w) }));
+    // wordData.sort((a, b) => b.word.length - a.word.length);
 
-        const result = buildMaster(wordData);
-        const masterPattern = result.master;
-        const maxLength = masterPattern.length;
+    const result = buildMaster(wordData);
+    const masterPattern = result.master;
+    const maxLength = masterPattern.length;
 
-        const numCol = document.getElementById('numberColumn');
-        numCol.innerHTML = wordData.map((_, i) => `<div class="num-item">${i + 1}.</div>`).join('');
+    const numCol = document.getElementById('numberColumn');
+    numCol.innerHTML = "";
 
-        let table = document.createElement('table');
-        let headerRow = document.createElement('tr');
-        headerRow.className = "header-row";
-        masterPattern.forEach(char => {
+    let table = document.createElement('table');
+    
+    // LAG OVERKRIFTSRADEN (V/K)
+    let headerRow = document.createElement('tr');
+    headerRow.className = "header-row";
+    
+    let blankTd = document.createElement('td');
+    blankTd.className = "num-cell-blank";
+    headerRow.appendChild(blankTd);
+
+    masterPattern.forEach(char => {
+        let td = document.createElement('td');
+        if (char === 'V') td.classList.add('is-vowel-cell');
+        td.innerHTML = `<span class="${char === 'V' ? 'v-text' : 'k-text'}">${char}</span>`;
+        headerRow.appendChild(td);
+    });
+    table.appendChild(headerRow);
+
+    // LAG ORD-RADENE
+    wordData.forEach((data, idx) => {
+        let row = document.createElement('tr');
+        
+        let numTd = document.createElement('td');
+        numTd.className = "num-cell";
+        numTd.textContent = `${idx + 1}.`;
+        row.appendChild(numTd);
+
+        let letters = data.word.split('');
+        let pos = result.placements[idx];
+        let altStarts = [];
+        for (let s = 0; s <= maxLength - data.pattern.length; s++) {
+            let match = true;
+            for (let j = 0; j < data.pattern.length; j++) {
+                if (masterPattern[s+j] !== data.pattern[j]) { match = false; break; }
+            }
+            if (match && s !== pos.start) altStarts.push(s);
+        }
+        for (let i = 0; i < maxLength; i++) {
             let td = document.createElement('td');
-            if (char === 'V') td.classList.add('is-vowel-cell');
-            td.innerHTML = `<span class="${char === 'V' ? 'v-text' : 'k-text'}">${char}</span>`;
-            headerRow.appendChild(td);
-        });
-        table.appendChild(headerRow);
-
-        wordData.forEach((data, idx) => {
-            let row = document.createElement('tr');
-            let letters = data.word.split('');
-            let pos = result.placements[idx];
-            let altStarts = [];
-            for (let s = 0; s <= maxLength - data.pattern.length; s++) {
-                let match = true;
-                for (let j = 0; j < data.pattern.length; j++) {
-                    if (masterPattern[s+j] !== data.pattern[j]) { match = false; break; }
-                }
-                if (match && s !== pos.start) altStarts.push(s);
+            if (masterPattern[i] === 'V') td.classList.add('is-vowel-cell');
+            if (i >= pos.start && i < pos.start + pos.length) {
+                td.innerHTML = `<span class="cell-content">${letters[i - pos.start]}</span>`;
+            } else { td.classList.add('inactive'); }
+            if (altStarts.includes(i)) {
+                td.classList.add('is-alt-start');
+                td.innerHTML += `<span class="alt-indicator">ALT</span>`;
             }
-            for (let i = 0; i < maxLength; i++) {
-                let td = document.createElement('td');
-                if (masterPattern[i] === 'V') td.classList.add('is-vowel-cell');
-                if (i >= pos.start && i < pos.start + pos.length) {
-                    td.innerHTML = `<span class="cell-content">${letters[i - pos.start]}</span>`;
-                } else { td.classList.add('inactive'); }
-                if (altStarts.includes(i)) {
-                    td.classList.add('is-alt-start');
-                    td.innerHTML += `<span class="alt-indicator">ALT</span>`;
-                }
-                row.appendChild(td);
-            }
-            table.appendChild(row);
-        });
+            row.appendChild(td);
+        }
+        table.appendChild(row);
+    });
 
-        document.getElementById('gridOutput').innerHTML = "";
-        document.getElementById('gridOutput').appendChild(table);
-        const sorted = [...rawWords].sort((a,b) => a.localeCompare(b, 'nb'));
-        document.getElementById('wordListOutput').innerHTML = `<div class="word-list-box"><h3>Ordliste</h3><ul>${sorted.map(w => `<li>${w}</li>`).join('')}</ul></div>`;
-        updateView();
+    document.getElementById('gridOutput').innerHTML = "";
+    document.getElementById('gridOutput').appendChild(table);
+
+    // === NY DYNAMISK VOKALBOKS-LOGIKK SOM MATCHER CSS ===
+    const boksContainer = document.getElementById('vowelBoxContainer');
+    boksContainer.innerHTML = ""; // Nullstill gammelt innhold
+
+let vowelBox = document.createElement('div');
+vowelBox.id = 'vowelLineElement';
+vowelBox.className = 'vowel-line'; // Matcher klassen i CSS
+
+// Vi legger på litt styling direkte på boksen for bakgrunnsfarge og luft
+vowelBox.style.backgroundColor = '#f8f9fa'; // Lys grå farge
+vowelBox.style.padding = '8px 12px';        // Luft på innsiden av boksen
+vowelBox.style.borderRadius = '6px';        // Myke, runde hjørner
+vowelBox.style.marginTop = '10px';          // Litt avstand til elementet over
+vowelBox.style.display = 'inline-block';    // Gjør at boksen ikke blir bredere enn innholdet
+
+vowelBox.innerHTML = `
+    <span style="font-weight: bold; margin-right: 12px; font-family: 'Segoe UI', sans-serif; font-size: 1.1rem; color: #2c3e50;">Vokaler:</span>
+    <span id="vowelListContent" style="font-family: 'trykkskrift', sans-serif; font-size: 1.1rem; letter-spacing: 3px;">a e i o u y æ ø å</span>
+`;
+boksContainer.appendChild(vowelBox);
+
+// === GENERER ORDLISTE ===
+    let ordlisteHTML = "";
+    
+    // NÅ RIKTIG: Sjekker om bryteren FAKTISK er huket av (checked)
+    const tommeFeltErMarkert = document.getElementById('toggleEnds').checked;
+
+if (tommeFeltErMarkert) {
+        const tilfeldigeOrd = [...rawWords];
+        for (let i = tilfeldigeOrd.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [tilfeldigeOrd[i], tilfeldigeOrd[j]] = [tilfeldigeOrd[j], tilfeldigeOrd[i]];
+        }
+        // Legg til en usynlig li-tag på slutten (.filler-space)
+        ordlisteHTML = tilfeldigeOrd.map(w => `<li>${w}</li>`).join('') + '<li class="filler-space"></li>';
+    } else {
+        // Legg til en usynlig li-tag på slutten (.filler-space)
+        ordlisteHTML = rawWords.map((w, idx) => `<li>${idx + 1}. ${w}</li>`).join('') + '<li class="filler-space"></li>';
     }
+
+    document.getElementById('wordListOutput').innerHTML = `
+        <div class="word-list-box">
+            <h3>Ordliste</h3>
+            <ul>${ordlisteHTML}</ul>
+        </div>
+    `;
+
+// === FIX: Hent valgt tema fra menyen og legg det på body med en gang gitteret lages ===
+    const temaSelect = document.getElementById('visueltTema') || document.querySelector('select[id*="tema"]'); 
+    if (temaSelect) {
+        // Fjern gamle theme-klasser først
+        document.body.className = document.body.className.replace(/\btheme-\S+/g, '');
+        document.body.className = document.body.className.replace(/\btema-\S+/g, '');
+        
+        // Legg til det temaet som faktisk er valgt i dropdown-menyen akkurat nå
+        document.body.classList.add(temaSelect.value);
+    }
+
+    updateView();
+// Vi øker fra 50 til 150 millisekunder for å gi nettleseren tid til å tegne linje 2
+    setTimeout(sjekkOverlappMedBilde, 150);
+}
+
+
 
     function downloadFullImage() {
         const element = document.getElementById('capture-area');
