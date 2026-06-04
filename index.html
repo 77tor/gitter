@@ -1361,7 +1361,7 @@ function downloadFullImage() {
     // Henter utskriften med en balansert skala (1.8 i stedet for 2.0)
     html2canvas(element, {
         backgroundColor: "#ffffff",
-        scale: 1.8, 
+        scale: 1.9, 
         useCORS: true,          
         allowTaint: false,      
         logging: false,
@@ -1376,7 +1376,7 @@ function downloadFullImage() {
 
         try {
             // Komprimerer bildet til 85% kvalitet (reduserer filstørrelsen enormt)
-            const imgData = canvas.toDataURL("image/jpeg", 0.90);
+            const imgData = canvas.toDataURL("image/jpeg", 0.95);
 
             const targetjsPDF = window.jspdf.jsPDF;
             
