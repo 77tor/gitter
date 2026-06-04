@@ -88,11 +88,11 @@
     /* KONTROLLER */
     .control-item {
         display: flex; align-items: center; justify-content: space-between;
-        background: rgba(0,0,0,0.2); padding: 10px 12px; border-radius: 8px; margin-bottom: 8px; font-size: 0.9rem;
+        background: rgba(0,0,0,0.2); padding: 4px 12px; border-radius: 8px; margin-bottom: 8px; font-size: 0.9rem;
     }
 
     .control-item select {
-        padding: 6px;
+        padding: 4px;
         border-radius: 4px;
         border: none;
         background: #ecf0f1;
@@ -850,8 +850,16 @@ body.theme-sport .page-title { color: #1e824c; }
             <label class="switch"><input type="checkbox" id="toggleEnds" onchange="updateView()"><span class="slider"></span></label>
         </div>
         <div class="control-item">
-            <span>Vokal-farge</span>
+            <span>Vokal-farge på gitter</span>
             <label class="switch"><input type="checkbox" id="toggleVowels" onchange="updateView()"><span class="slider"></span></label>
+        </div>
+        <div class="control-item">
+            <span>Vis linje med alle vokalene</span>
+            <label class="switch"><input type="checkbox" id="toggleVowelLine" onchange="updateView()"><span class="slider"></span></label>
+        </div>
+        <div class="control-item">
+            <span>Bare STORE bokstaver</span>
+            <label class="switch"><input type="checkbox" id="toggleCase" onchange="updateView()"><span class="slider"></span></label>
         </div>
 <div class="control-item">
     <span>Rutestørrelse</span>
@@ -861,18 +869,6 @@ body.theme-sport .page-title { color: #1e824c; }
         <option value="55px">Store ruter</option>
     </select>
 </div>
-        <div class="control-item">
-            <span>STORE bokstaver</span>
-            <label class="switch"><input type="checkbox" id="toggleCase" onchange="updateView()"><span class="slider"></span></label>
-        </div>
-        <div class="control-item">
-            <span>Vis linje med alle vokalene</span>
-            <label class="switch"><input type="checkbox" id="toggleVowelLine" onchange="updateView()"><span class="slider"></span></label>
-        </div>
-        <div class="control-item">
-            <span style="color: #ff7675;">Vis fasit</span>
-            <label class="switch"><input type="checkbox" id="toggleFasit" onchange="updateView()"><span class="slider"></span></label>
-        </div>
         
         <div class="control-item">
             <span>Visuelt tema</span>
@@ -900,7 +896,10 @@ body.theme-sport .page-title { color: #1e824c; }
             <span>Overskrift</span>
             <input type="text" id="titleInput" class="title-input" placeholder="Gitteroppgave" oninput="oppdaterOverskrift()">
         </div>
-
+        <div class="control-item">
+            <span style="color: #ff7675;">Vis fasit</span>
+            <label class="switch"><input type="checkbox" id="toggleFasit" onchange="updateView()"><span class="slider"></span></label>
+        </div>
         <div class="btn-group">
             <button class="action-btn btn-generate" onclick="generate()" style="flex: 2; white-space: nowrap;">LAG GITTER</button>
             <button class="action-btn" onclick="resetForm()" style="flex: 1; white-space: nowrap; background-color: #ff7675;">NULLSTILL</button>
