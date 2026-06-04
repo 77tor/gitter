@@ -1351,19 +1351,19 @@ function downloadFullImage() {
     }
     
     if (!window.jspdf || !window.jspdf.jsPDF) {
-        alert("Feil: Fant ikke jsPDF-biblioteket! Sjekk at skript-lenken ligger i HTML-en.");
+        alert("Feil: Fant ikke jsPDF-biblioteket!");
         return;
     }
     
     const originalTransform = element.style.transform;
     element.style.transform = "none";
 
-    // Optimert for GitHub Pages (webserver-miljø)
+    // Henter utskriften med en balansert skala (1.5 i stedet for 2.0)
     html2canvas(element, {
         backgroundColor: "#ffffff",
-        scale: 2, 
-        useCORS: true,          // Tillater trygg bildehenting på webserver
-        allowTaint: false,      // Sikrer at canvasen forblir "ren" for eksport
+        scale: 1.5, 
+        useCORS: true,          
+        allowTaint: false,      
         logging: false,
         onclone: (clonedDoc) => {
             const area = clonedDoc.getElementById('capture-area');
@@ -1375,16 +1375,24 @@ function downloadFullImage() {
         element.style.transform = originalTransform; 
 
         try {
-            // PNG gir best kvalitet på tekst og rene linjer på nett
-            const imgData = canvas.toDataURL("image/png");
+            // Komprimerer bildet til 75% kvalitet (reduserer filstørrelsen enormt)
+            const imgData = canvas.toDataURL("image/jpeg", 0.75);
 
             const targetjsPDF = window.jspdf.jsPDF;
-            const pdf = new targetjsPDF('p', 'mm', 'a4');
+            
+            // Aktiverer innebygd PDF-komprimering med { compress: true }
+            const pdf = new targetjsPDF({
+                orientation: 'p',
+                unit: 'mm',
+                format: 'a4',
+                compress: true
+            });
             
             const pdfBredde = pdf.internal.pageSize.getWidth();
             const pdfHøyde = pdf.internal.pageSize.getHeight();
 
-            pdf.addImage(imgData, 'PNG', 0, 0, pdfBredde, pdfHøyde);
+            // Legger til det komprimerte bildet med 'FAST' for raskere/lettere prosessering
+            pdf.addImage(imgData, 'JPEG', 0, 0, pdfBredde, pdfHøyde, undefined, 'FAST');
             pdf.save('gitter_oppgave.pdf');
             
         } catch (feil) {
@@ -1396,7 +1404,6 @@ function downloadFullImage() {
         alert("Kunne ikke ta bilde av arket: " + err.message);
     });
 }
-
     function toggleMenu() {
         document.getElementById("myDropdown").classList.toggle("show");
     }
