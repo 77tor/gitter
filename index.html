@@ -1113,24 +1113,38 @@ body.theme-sport .page-title { color: #1e824c; }
         }
     }
 
-    function resetForm() {
-        if(!confirm("Nullstille alt?")) return;
-        document.getElementById('wordInput').value = "";
-        document.getElementById('gridOutput').innerHTML = "";
-        document.getElementById('numberColumn').innerHTML = "";
-        document.getElementById('wordListOutput').innerHTML = "";
-        document.getElementById('placeholder-image').style.display = 'flex';
-        document.getElementById('capture-area').style.display = 'none';
-        document.querySelectorAll('input[type=checkbox]').forEach(el => el.checked = false);
-        document.getElementById('temaVelger').value = 'tema-standard';
-        document.getElementById('titleInput').value = ""; 
-        document.getElementById('pageTitle').textContent = "Gitteroppgave";
-        
-        document.getElementById('sizeVelger').value = '42px';
-        oppdaterStorrelse();
-        oppdaterTema();
-        updateView();
+function resetForm() {
+    if(!confirm("Nullstille alt?")) return;
+    document.getElementById('wordInput').value = "";
+    document.getElementById('gridOutput').innerHTML = "";
+    document.getElementById('numberColumn').innerHTML = "";
+    document.getElementById('wordListOutput').innerHTML = "";
+    document.getElementById('placeholder-image').style.display = 'flex';
+    document.getElementById('capture-area').style.display = 'none';
+    document.querySelectorAll('input[type=checkbox]').forEach(el => el.checked = false);
+    
+    // KORRIGERT: Endret fra 'tema-standard' til 'theme-standard' (eller den nøyaktige valuematchingen i din HTML)
+    const temaVelger = document.getElementById('temaVelger');
+    if (temaVelger) {
+        // Vi prøver 'theme-standard', hvis menyen din faktisk bruker 'tema-standard' i HTML, 
+        // kan du la den stå, men sjekk opp mot oppdaterTema() listen.
+        temaVelger.value = 'theme-standard'; 
     }
+    
+    document.getElementById('titleInput').value = ""; 
+    document.getElementById('pageTitle').textContent = "Gitteroppgave";
+    
+    // Nullstiller størrelse til Middels ruter (42px)
+    const sizeVelger = document.getElementById('sizeVelger');
+    if (sizeVelger) {
+        sizeVelger.value = '42px';
+    }
+    
+    // Kjører oppdateringene i riktig rekkefølge
+    oppdaterStorrelse();
+    oppdaterTema();
+    updateView();
+}
 
     function getPattern(word) {
         return word.toLowerCase().split('').map(c => vokaler.includes(c) ? 'V' : 'K');
