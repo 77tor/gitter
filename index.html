@@ -1342,7 +1342,6 @@ function resetForm() {
         
         setTimeout(sjekkOverlappMedBilde, 150);
     }
-
 function downloadFullImage() {
     const element = document.getElementById('capture-area');
     if (!element || document.getElementById('gridOutput').innerHTML === "") {
@@ -1358,7 +1357,7 @@ function downloadFullImage() {
     const originalTransform = element.style.transform;
     element.style.transform = "none";
 
-    // Henter utskriften med en balansert skala (1.8 i stedet for 2.0)
+    // Setter skalaen opp til 2 for optimal print-oppløsning
     html2canvas(element, {
         backgroundColor: "#ffffff",
         scale: 2, 
@@ -1375,12 +1374,12 @@ function downloadFullImage() {
         element.style.transform = originalTransform; 
 
         try {
-            // Komprimerer bildet til 85% kvalitet (reduserer filstørrelsen enormt)
-            const imgData = canvas.toDataURL("image/jpeg", 0.95);
+            // ENDRET: Bruker PNG i stedet for JPEG for å fjerne all uskarphet rundt tekst og linjer
+            const imgData = canvas.toDataURL("image/png");
 
             const targetjsPDF = window.jspdf.jsPDF;
             
-            // Aktiverer innebygd PDF-komprimering med { compress: true }
+            // Beholder den interne PDF-komprimeringen som krymper filstørrelsen uten å ødelegge pikslene
             const pdf = new targetjsPDF({
                 orientation: 'p',
                 unit: 'mm',
@@ -1391,8 +1390,8 @@ function downloadFullImage() {
             const pdfBredde = pdf.internal.pageSize.getWidth();
             const pdfHøyde = pdf.internal.pageSize.getHeight();
 
-            // Legger til det komprimerte bildet med 'FAST' for raskere/lettere prosessering
-            pdf.addImage(imgData, 'JPEG', 0, 0, pdfBredde, pdfHøyde, undefined, 'FAST');
+            // ENDRET: Fjernet 'FAST' og bruker 'PNG' for å tvinge nettleseren til å rendre arket med maksimal presisjon
+            pdf.addImage(imgData, 'PNG', 0, 0, pdfBredde, pdfHøyde, undefined, 'NONE');
             pdf.save('gitter_oppgave.pdf');
             
         } catch (feil) {
@@ -1404,6 +1403,7 @@ function downloadFullImage() {
         alert("Kunne ikke ta bilde av arket: " + err.message);
     });
 }
+
     function toggleMenu() {
         document.getElementById("myDropdown").classList.toggle("show");
     }
